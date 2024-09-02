@@ -28,8 +28,105 @@
                         </div>
                     </div>
                 </div>
-                <div class="service text-wrap q-pa-md">
-                    <h1>Services available soon .....</h1>
+                <div class="therapist-card  q-ma-md q-pa-md">
+                    <div class="row items-center q-col-gutter-md">
+                        <div class="col-12 col-sm-auto">
+                            <q-avatar size="120px">
+                                <img :src=therapist.image alt="Therapist Photo" />
+                            </q-avatar>
+                        </div>
+                        <div class="col-12 col-sm">
+                            <div class="text-h4 text-weight-bold">{{ therapist.name }}</div>
+                            <div class="text-caption text-grey-7">Reg. No.: {{ therapist.regNo }}</div>
+                            <div class="text-body1 q-mt-sm">{{ therapist.qualification }}</div>
+                            <div class="text-body2 q-mt-xs">{{ therapist.experience }}</div>
+                            <div class="text-body2 q-mt-xs">Starts at ₹{{ therapist.price }} for 30 mins</div>
+                        </div>
+                    </div>
+                    <div class="row q-mt-md q-col-gutter-sm justify-between items-center">
+                        <div class="col-auto">
+                            <q-btn color="orange-8" label="BOOK SESSION" class="text-white" padding="sm lg"
+                                @click="bookSession" />
+                        </div>
+                        <div class="col-auto">
+                            <q-btn flat round icon="share" color="grey-7" @click="shareProfile" />
+                        </div>
+                    </div>
+                </div>
+                <div class="therapist-card  q-ma-md q-pa-md">
+                    <div class="row items-center q-col-gutter-md">
+                        <div class="col-12 col-sm-auto">
+                            <q-avatar size="120px">
+                                <img :src=therapist.image alt="Therapist Photo" />
+                            </q-avatar>
+                        </div>
+                        <div class="col-12 col-sm">
+                            <div class="text-h4 text-weight-bold">{{ therapist.name }}</div>
+                            <div class="text-caption text-grey-7">Reg. No.: {{ therapist.regNo }}</div>
+                            <div class="text-body1 q-mt-sm">{{ therapist.qualification }}</div>
+                            <div class="text-body2 q-mt-xs">{{ therapist.experience }}</div>
+                            <div class="text-body2 q-mt-xs">Starts at ₹{{ therapist.price }} for 30 mins</div>
+                        </div>
+                    </div>
+                    <div class="row q-mt-md q-col-gutter-sm justify-between items-center">
+                        <div class="col-auto">
+                            <q-btn color="orange-8" label="BOOK SESSION" class="text-white" padding="sm lg"
+                                @click="bookSession" />
+                        </div>
+                        <div class="col-auto">
+                            <q-btn flat round icon="share" color="grey-7" @click="shareProfile" />
+                        </div>
+                    </div>
+                </div>
+                <div class="therapist-card  q-ma-md q-pa-md">
+                    <div class="row items-center q-col-gutter-md">
+                        <div class="col-12 col-sm-auto">
+                            <q-avatar size="120px">
+                                <img :src=therapist.image alt="Therapist Photo" />
+                            </q-avatar>
+                        </div>
+                        <div class="col-12 col-sm">
+                            <div class="text-h4 text-weight-bold">{{ therapist.name }}</div>
+                            <div class="text-caption text-grey-7">Reg. No.: {{ therapist.regNo }}</div>
+                            <div class="text-body1 q-mt-sm">{{ therapist.qualification }}</div>
+                            <div class="text-body2 q-mt-xs">{{ therapist.experience }}</div>
+                            <div class="text-body2 q-mt-xs">Starts at ₹{{ therapist.price }} for 30 mins</div>
+                        </div>
+                    </div>
+                    <div class="row q-mt-md q-col-gutter-sm justify-between items-center">
+                        <div class="col-auto">
+                            <q-btn color="orange-8" label="BOOK SESSION" class="text-white" padding="sm lg"
+                                @click="bookSession" />
+                        </div>
+                        <div class="col-auto">
+                            <q-btn flat round icon="share" color="grey-7" @click="shareProfile" />
+                        </div>
+                    </div>
+                </div>
+                <div class="therapist-card  q-ma-md q-pa-md">
+                    <div class="row items-center q-col-gutter-md">
+                        <div class="col-12 col-sm-auto">
+                            <q-avatar size="120px">
+                                <img :src=therapist.image alt="Therapist Photo" />
+                            </q-avatar>
+                        </div>
+                        <div class="col-12 col-sm">
+                            <div class="text-h4 text-weight-bold">{{ therapist.name }}</div>
+                            <div class="text-caption text-grey-7">Reg. No.: {{ therapist.regNo }}</div>
+                            <div class="text-body1 q-mt-sm">{{ therapist.qualification }}</div>
+                            <div class="text-body2 q-mt-xs">{{ therapist.experience }}</div>
+                            <div class="text-body2 q-mt-xs">Starts at ₹{{ therapist.price }} for 30 mins</div>
+                        </div>
+                    </div>
+                    <div class="row q-mt-md q-col-gutter-sm justify-between items-center">
+                        <div class="col-auto">
+                            <q-btn color="orange-8" label="BOOK SESSION" class="text-white" padding="sm lg"
+                                @click="bookSession" />
+                        </div>
+                        <div class="col-auto">
+                            <q-btn flat round icon="share" color="grey-7" @click="shareProfile" />
+                        </div>
+                    </div>
                 </div>
             </q-page>
         </q-page-container>
@@ -37,9 +134,10 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router';
+import { useRoute , useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import AppHeader from 'src/components/common/AppHeader.vue';
+const router = useRouter();
 
 const route = useRoute();
 const therapist = ref(
@@ -111,6 +209,7 @@ const fetchTherapistDetails = (id) => {
 };
 const bookSession = () => {
     console.log('Book Session');
+    router.push({ path: '/book-session' });
 };
 const shareProfile = () => {
     console.log('Share Profile');
@@ -138,5 +237,9 @@ const shareProfile = () => {
 
 .q-btn {
     font-weight: bold;
+}
+.q-page{
+    max-width: 1200px;
+    margin: 0 auto;
 }
 </style>

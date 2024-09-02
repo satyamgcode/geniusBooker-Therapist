@@ -44,7 +44,7 @@
   const therapists = ref([
     { 
       id: 1,
-      name: 'Malvika Agarwal',
+      name: 'Malvika Therapy store',
       qualification: 'MA in Clinical Psychology',
       specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
       availableAt: 'Aug 28, 2024 3:00 PM',
@@ -52,7 +52,7 @@
     },
     {
       id: 2,
-      name: 'Ayesha Bukhari',
+      name: 'Ayesha Bukhari Therapy store ',
       qualification: 'MA in Clinical Psychology',
       specialization: 'Depression, Trauma, Body Image, ADHD, Stress, Anger, Anxiety',
       availableAt: 'Aug 28, 2024 3:00 PM',
@@ -60,7 +60,7 @@
     },
     {
       id: 3,
-      name: 'Rashi Lambe',
+      name: 'Rashi Lambe Therapy store',
       qualification: 'MSc. in Counseling Psychology',
       specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
       availableAt: 'Aug 28, 2024 3:00 PM',
@@ -68,7 +68,7 @@
     },
     {
       id: 4,
-      name: 'Malvika Agarwal',
+      name: 'Malvika Agarwal Therapy store',
       qualification: 'MA in Clinical Counseling',
       specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
       availableAt: 'Aug 28, 2024 3:00 PM',
@@ -76,7 +76,7 @@
     },
     {
       id: 5,
-      name: 'Rashi Lambe',
+      name: 'Rashi Lambe Therapy store',
       qualification: 'MSc. in Counseling Psychology',
       specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
       availableAt: 'Aug 28, 2024 3:00 PM',
@@ -84,7 +84,7 @@
     },
     {
       id: 6,
-      name: 'Malvika Agarwal',
+      name: 'Malvika Agarwal Therapy store',
       qualification: 'MA in Clinical Counseling',
       specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
       availableAt: 'Aug 28, 2024 3:00 PM',

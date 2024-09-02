@@ -38,7 +38,20 @@ const routes = [
   {
     path: '/storeId',
     component: () => import('pages/ShowStoreById.vue'),
+  },
+  {
+    path: '/StaffDetails',
+    component: () => import('pages/StaffDetails.vue'),
+  },
+  {
+    path : '/storePackages',
+    component: () => import('pages/StorePackages.vue'),
+  },
+  {
+    path : '/book-session',
+    component: () => import('pages/BookSession.vue'),
   }
+
 
 ]
 

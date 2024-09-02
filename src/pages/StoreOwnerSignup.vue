@@ -3,7 +3,7 @@
       <home-header />
       <q-page-container>
         <q-page padding class="flex flex-center bg-grey-3">
-          <q-card class="q-ma-md q-pa-sm" style="width: 400px;">
+          <q-card class="q-ma-md q-pa-sm custom-card" style="width: 400px;">
             <q-tabs
               v-model="selectedTab"
               class="text-teal"
@@ -108,12 +108,14 @@
   </template>
   
   <script setup>
+  import { useAuthStore } from 'src/stores/AuthStore';
   import { ref } from 'vue';
   import HomeHeader from '../components/common/HomeHeader.vue'
   import { useRouter } from 'vue-router'
   import axios from 'axios';
   
   const router = useRouter()
+  const authStore = useAuthStore()
   
   const selectedTab = ref('signup');
   const name = ref('');
@@ -137,6 +139,8 @@
     selectedTab.value = 'signin';
   } catch (error) {
     console.error('Error during signup:', error);
+  } finally{
+    selectedTab.value = 'signin';
   }
 }
 
@@ -152,9 +156,12 @@ const handleLogin = async () => {
     }
     });
     console.log(response.data);
+    authStore.setToken(response.data.token);
     router.push('/createStore');
   } catch (error) {
     console.error('Error during login:', error);
+  } finally{
+    router.push('/createStore');
   }
 }
   
@@ -168,4 +175,11 @@ const handleLogin = async () => {
     
   };
   </script>
+
+  <style scoped>
+      .custom-card {
+        border-radius: 20px;
+        padding-top: 12px;
+      }
+  </style>
   

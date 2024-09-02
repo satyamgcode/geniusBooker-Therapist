@@ -30,8 +30,8 @@
       </div>
 
       <q-card-actions align="right" class="q-pt-md">
-        <q-btn label="View Profile" flat color="primary" @click="navigateToTherapistProfile" />
-        <q-btn label="Book Session" color="primary" @click="navigateToTherapistProfile" />
+        <q-btn label="View Store" flat color="primary" @click="navigateToTherapistProfile" />
+        <q-btn label="Explore" color="primary" @click="navigateToTherapistProfile" />
       </q-card-actions>
     </div>
   </q-card>
