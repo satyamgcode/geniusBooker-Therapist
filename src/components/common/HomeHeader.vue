@@ -6,14 +6,8 @@
           <q-toolbar-title cursor-pointer class="title" @click="navigateToHome" >GB</q-toolbar-title>
         </div>
         <div class="toolbar-right">
-          <q-btn
-              label="Customer Login"
-              flat
-              class="customer-login-button"
-              @click="navigateToCustomerLogin"
-            />
             <q-btn
-              label="Store Login"
+              label="Own a Store"
               flat
               class="store-login-button"
               @click="navigateToStoreLogin"
@@ -28,11 +22,6 @@
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
-const navigateToCustomerLogin = () => {
-  console.log('navigateToCustomerLogin')
-  router.push('/user/signup')
-}
 
 const navigateToStoreLogin = () => {
   router.push('/owner/signup')

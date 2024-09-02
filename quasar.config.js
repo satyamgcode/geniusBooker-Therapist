@@ -12,7 +12,7 @@
 const { configure } = require('quasar/wrappers');
 
 
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(function (ctx ) {
   return {
     
 
@@ -50,10 +50,13 @@ module.exports = configure(function (/* ctx */) {
     build: {
       target: {
         browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
-        node: 'node16'
+        node: 'node16',
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
+      env: {
+        VUE_APP_API_URL: JSON.stringify(process.env.VUE_APP_API_URL),
+      },
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,

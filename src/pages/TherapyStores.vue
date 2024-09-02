@@ -42,7 +42,8 @@
   import TherapistCard from 'src/components/cardsection/TherapistCards.vue';
   
   const therapists = ref([
-    {
+    { 
+      id: 1,
       name: 'Malvika Agarwal',
       qualification: 'MA in Clinical Psychology',
       specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
@@ -50,6 +51,7 @@
       image: 'https://via.placeholder.com/80',
     },
     {
+      id: 2,
       name: 'Ayesha Bukhari',
       qualification: 'MA in Clinical Psychology',
       specialization: 'Depression, Trauma, Body Image, ADHD, Stress, Anger, Anxiety',
@@ -57,6 +59,7 @@
       image: 'https://via.placeholder.com/80',
     },
     {
+      id: 3,
       name: 'Rashi Lambe',
       qualification: 'MSc. in Counseling Psychology',
       specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
@@ -64,6 +67,7 @@
       image: 'https://via.placeholder.com/80',
     },
     {
+      id: 4,
       name: 'Malvika Agarwal',
       qualification: 'MA in Clinical Counseling',
       specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
@@ -71,6 +75,7 @@
       image: 'https://via.placeholder.com/80',
     },
     {
+      id: 5,
       name: 'Rashi Lambe',
       qualification: 'MSc. in Counseling Psychology',
       specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
@@ -78,6 +83,7 @@
       image: 'https://via.placeholder.com/80',
     },
     {
+      id: 6,
       name: 'Malvika Agarwal',
       qualification: 'MA in Clinical Counseling',
       specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',

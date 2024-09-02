@@ -3,7 +3,7 @@
       <home-header />
       <q-page-container>
         <q-page padding class="flex flex-center bg-grey-3">
-          <q-card class="q-pa-lg q-ma-lg" style="width: 400px;">
+          <q-card class="q-ma-md q-pa-sm" style="width: 400px;">
             <q-tabs
               v-model="selectedTab"
               class="text-teal"
@@ -110,20 +110,62 @@
   <script setup>
   import { ref } from 'vue';
   import HomeHeader from '../components/common/HomeHeader.vue'
-import router from 'src/router';
+  import { useRouter } from 'vue-router'
+  import axios from 'axios';
   
-  const selectedTab = ref('signin');
+  const router = useRouter()
+  
+  const selectedTab = ref('signup');
   const name = ref('');
   const email = ref('');
   const password = ref('');
   const storeName = ref('');
-  
-  const submitForm = () => {
-    if(selectedTab.value === 'signup') {
-      selectedTab.value = 'signin';
-    } else if(selectedTab.value === 'signin') {
-      router.push('/StoreOwnerDetail');
+
+  const handleSignup = async () => {
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/api/register/', {
+      username: name.value,
+      email: email.value,
+      password: password.value,
+      store_name: storeName.value
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log(response.data);
+    selectedTab.value = 'signin';
+  } catch (error) {
+    console.error('Error during signup:', error);
+  }
+}
+
+const handleLogin = async () => {
+  try{
+    const response = await axios.post('http://127.0.0.1:8000/api/login/', {
+      email: email.value,
+      password: password.value
+    },
+    {
+      headers: {
+      'Content-Type': 'application/json'
     }
+    });
+    console.log(response.data);
+    router.push('/createStore');
+  } catch (error) {
+    console.error('Error during login:', error);
+  }
+}
+  
+  const submitForm = async () => {
+    if(selectedTab.value === 'signup') {
+      await handleSignup();
+    } else if(selectedTab.value === 'signin') {
+      await handleLogin();
+    }
+    
+    
   };
   </script>
   

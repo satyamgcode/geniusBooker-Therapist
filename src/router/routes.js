@@ -23,12 +23,21 @@ const routes = [
     path: '/CustomerDetail',
     component: () => import('pages/CustomerDetail.vue'),
   },
-  {
-    path: '/StoreOwnerDetail',
-    component: () => import('pages/StoreOwnerDetail.vue'),
-  },{
+ {
     path: '/therapyStores',
     component: () => import('pages/TherapyStores.vue'),
+  },
+  { 
+    path: '/therapistProfile/:id',
+    component: () => import('pages/TherapistDetail.vue'),
+  },
+  {
+    path: '/createStore',
+    component: () => import('pages/CreateStore.vue'),
+  },
+  {
+    path: '/storeId',
+    component: () => import('pages/ShowStoreById.vue'),
   }
 
 ]

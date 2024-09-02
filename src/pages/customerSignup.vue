@@ -103,13 +103,25 @@
   const name = ref('');
   const email = ref('');
   const password = ref('');
+
+  const handleSignup = () => {
+    const response = axios.post('http://192.168.29.115:8000/api/register', {
+      Headers: {
+        'Content-Type': 'application/json'
+      }
+      
+    })
+    console.log(response)
+  }
   
   const submitForm = () => {
-    if(selectedTab.value === 'signup'){
-      selectedTab.value = 'signin'
-    }else if(selectedTab.value === 'signin'){
-      router.push('/CustomerDetail')
-    }
+    // if(selectedTab.value === 'signup'){
+    //   selectedTab.value = 'signin'
+    // }else if(selectedTab.value === 'signin'){
+    //   router.push('/CustomerDetail')
+    // }
+    handleSignup()
+
   }
   </script>
   
