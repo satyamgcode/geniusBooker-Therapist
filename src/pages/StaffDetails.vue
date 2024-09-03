@@ -12,6 +12,7 @@
                   <img
                     src="src/assets/icons/addStaff.svg"
                     outline
+                    alt="Add Staff"
                     dense
                     class="cursor-pointer"
                     @click="addStaff"

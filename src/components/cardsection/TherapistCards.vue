@@ -8,7 +8,7 @@
               <img :src="therapist.image" alt="Therapist Photo" />
             </q-avatar>
             <div class="q-ml-md">
-              <div class="text-h6">{{ therapist.name }}</div>
+              <div class="text-h6">{{ therapist.storeName }}</div>
               <div class="text-subtitle2">{{ therapist.qualification }}</div>
             </div>
           </div>
@@ -51,7 +51,7 @@ const props = defineProps({
 
 const navigateToTherapistProfile = () => {
   router.push({
-    path: '/therapistProfile/' + props.therapist.id,
+    path: '/therapistStore/' + props.therapist.id,
   });
 };
 </script>

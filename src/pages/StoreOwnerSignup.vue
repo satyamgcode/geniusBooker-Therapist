@@ -37,6 +37,15 @@
                     />
                     <q-input
                       filled
+                      v-model="phone"
+                      label="Phone Number"
+                      dense
+                      mask="(###) ###-####"
+                      class="q-my-sm"
+                      :rules="[val => !!val || 'Phone number is required']"
+                    />
+                    <q-input
+                      filled
                       v-model="password"
                       label="Password"
                       dense
@@ -84,6 +93,15 @@
                     />
                     <q-input
                       filled
+                      v-model="phone"
+                      label="Phone Number"
+                      dense
+                      mask="(###) ###-####"
+                      class="q-my-sm"
+                      :rules="[val => !!val || 'Phone number is required']"
+                    />
+                    <q-input
+                      filled
                       v-model="password"
                       label="Password"
                       dense
@@ -121,6 +139,7 @@
   const name = ref('');
   const email = ref('');
   const password = ref('');
+  const phone  = ref('');
   const storeName = ref('');
 
   const handleSignup = async () => {
@@ -128,6 +147,7 @@
     const response = await axios.post('http://127.0.0.1:8000/api/register/', {
       username: name.value,
       email: email.value,
+      phone: phone.value,
       password: password.value,
       store_name: storeName.value
     }, {
@@ -147,7 +167,7 @@
 const handleLogin = async () => {
   try{
     const response = await axios.post('http://127.0.0.1:8000/api/login/', {
-      email: email.value,
+      phone: phone.value,
       password: password.value
     },
     {

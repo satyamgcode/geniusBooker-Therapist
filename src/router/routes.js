@@ -28,7 +28,7 @@ const routes = [
     component: () => import('pages/TherapyStores.vue'),
   },
   { 
-    path: '/therapistProfile/:id',
+    path: '/therapistStore/:id',
     component: () => import('pages/TherapistDetail.vue'),
   },
   {

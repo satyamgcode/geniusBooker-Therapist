@@ -14,6 +14,11 @@ const { configure } = require('quasar/wrappers');
 
 module.exports = configure(function (ctx ) {
   return {
+    framework: {
+      config: {},
+      plugins: ['Notify']
+    },
+
     
 
     // https://v2.quasar.dev/quasar-cli/prefetch-feature

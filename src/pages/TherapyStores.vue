@@ -1,128 +1,157 @@
 <template>
-    <q-layout>
-      <app-header />
-      <q-page-container>
-        <q-page class="q-pa-none">
-          <div class="bg-cover-container">
-            <div class="hero-content q-px-lg">
-              <q-card class="hero-card">
-                <q-card-section>
-                  <div class="text-h4 text-bold">Talk Resolve Heal</div>
-                  <div class="q-mt-sm text-subtitle2">
-                    Online Counselling Therapy With Top Psychologists Anytime, Anywhere, Any device.
-                  </div>
-                  <q-btn label="Get Started" color="primary" class="q-mt-md q-px-lg" />
-                </q-card-section>
-              </q-card>
-            </div>
+  <q-layout>
+    <app-header />
+    <q-page-container>
+      <q-page class="q-pa-none">
+        <div class="bg-cover-container">
+          <div class="hero-content q-px-lg">
+            <q-card class="hero-card">
+              <q-card-section>
+                <div class="text-h4 text-bold">Talk Resolve Heal</div>
+                <div class="q-mt-sm text-subtitle2">
+                  Online Counselling Therapy With Top Psychologists Anytime, Anywhere, Any device.
+                </div>
+                <q-btn label="Get Started" color="primary" class="q-mt-md q-px-lg" />
+              </q-card-section>
+            </q-card>
           </div>
-          <div>
-            <q-separator class="q-my-lg" />
-            <div class="text-center">
-              <h2>Choose Help. Not Suffering.</h2>
-              <h5 class="max-w-lg">Counselling Therapy Sessions With Licensed & Verified Experts</h5>
-            </div>
-  
-            <div class="therapists-container row wrap justify-center q-px-lg q-py-md">
-              <TherapistCard
-                v-for="(therapist, index) in therapists"
-                :key="index"
-                :therapist="therapist"
-              />
-            </div>
+        </div>
+        <div>
+          <q-separator class="q-my-lg" />
+          <div class="text-center">
+            <h2>Choose Help. Not Suffering.</h2>
+            <h5 class="max-w-lg">Counselling Therapy Sessions With Licensed & Verified Experts</h5>
           </div>
-        </q-page>
-      </q-page-container>
-    </q-layout>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  import AppHeader from 'src/components/common/AppHeader.vue';
-  import TherapistCard from 'src/components/cardsection/TherapistCards.vue';
-  
-  const therapists = ref([
-    { 
-      id: 1,
-      name: 'Malvika Therapy store',
-      qualification: 'MA in Clinical Psychology',
-      specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
-      availableAt: 'Aug 28, 2024 3:00 PM',
-      image: 'https://via.placeholder.com/80',
-    },
-    {
-      id: 2,
-      name: 'Ayesha Bukhari Therapy store ',
-      qualification: 'MA in Clinical Psychology',
-      specialization: 'Depression, Trauma, Body Image, ADHD, Stress, Anger, Anxiety',
-      availableAt: 'Aug 28, 2024 3:00 PM',
-      image: 'https://via.placeholder.com/80',
-    },
-    {
-      id: 3,
-      name: 'Rashi Lambe Therapy store',
-      qualification: 'MSc. in Counseling Psychology',
-      specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
-      availableAt: 'Aug 28, 2024 3:00 PM',
-      image: 'https://via.placeholder.com/80',
-    },
-    {
-      id: 4,
-      name: 'Malvika Agarwal Therapy store',
-      qualification: 'MA in Clinical Counseling',
-      specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
-      availableAt: 'Aug 28, 2024 3:00 PM',
-      image: 'https://via.placeholder.com/80',
-    },
-    {
-      id: 5,
-      name: 'Rashi Lambe Therapy store',
-      qualification: 'MSc. in Counseling Psychology',
-      specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
-      availableAt: 'Aug 28, 2024 3:00 PM',
-      image: 'https://via.placeholder.com/80',
-    },
-    {
-      id: 6,
-      name: 'Malvika Agarwal Therapy store',
-      qualification: 'MA in Clinical Counseling',
-      specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
-      availableAt: 'Aug 28, 2024 3:00 PM',
-      image: 'https://via.placeholder.com/80',
-    }
-  ]);
-  </script>
-  
-  <style scoped>
-  .bg-cover-container {
-    height: 70vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-image: url('../assets/heroimage.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+
+          <div class="therapists-container row wrap justify-center q-px-lg q-py-md">
+            <TherapistCard
+              v-for="(therapist, index) in therapists"
+              :key="index"
+              :therapist="therapist"
+            />
+          </div>
+        </div>
+      </q-page>
+    </q-page-container>
+  </q-layout>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import AppHeader from 'src/components/common/AppHeader.vue';
+import TherapistCard from 'src/components/cardsection/TherapistCards.vue';
+
+const therapists = ref([
+  { 
+    id: 1,
+    storeName: 'Malvika Therapy Store',
+    qualification: 'MA in Clinical Psychology',
+    specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
+    availableAt: 'Aug 28, 2024 3:00 PM',
+    image: 'https://via.placeholder.com/80',
+    staff: [
+      { id: 1, name: 'Dr. Anjali Sharma', role: 'Senior Psychologist', experience: '10 years' },
+      { id: 2, name: 'Dr. Vikram Mehta', role: 'Child Psychologist', experience: '7 years' },
+      { id: 3, name: 'Ms. Nidhi Patel', role: 'Therapy Assistant', experience: '3 years' }
+    ]
+  },
+  {
+    id: 2,
+    storeName: 'Ayesha Bukhari Therapy Store',
+    qualification: 'MA in Clinical Psychology',
+    specialization: 'Depression, Trauma, Body Image, ADHD, Stress, Anger, Anxiety',
+    availableAt: 'Aug 28, 2024 3:00 PM',
+    image: 'https://via.placeholder.com/80',
+    staff: [
+      { id: 1, name: 'Dr. Sameer Khan', role: 'Senior Therapist', experience: '12 years' },
+      { id: 2, name: 'Ms. Ritu Verma', role: 'Cognitive Therapist', experience: '5 years' },
+      { id: 3, name: 'Mr. Ajay Singh', role: 'Mental Health Counselor', experience: '4 years' }
+    ]
+  },
+  {
+    id: 3,
+    storeName: 'Rashi Lambe Therapy Store',
+    qualification: 'MSc. in Counseling Psychology',
+    specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
+    availableAt: 'Aug 28, 2024 3:00 PM',
+    image: 'https://via.placeholder.com/80',
+    staff: [
+      { id: 1, name: 'Dr. Pooja Kulkarni', role: 'Psychotherapist', experience: '8 years' },
+      { id: 2, name: 'Mr. Arun Jain', role: 'Relationship Counselor', experience: '6 years' },
+      { id: 3, name: 'Ms. Preeti Desai', role: 'Wellness Coach', experience: '3 years' }
+    ]
+  },
+  {
+    id: 4,
+    storeName: 'Malvika Agarwal Therapy Store',
+    qualification: 'MA in Clinical Counseling',
+    specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
+    availableAt: 'Aug 28, 2024 3:00 PM',
+    image: 'https://via.placeholder.com/80',
+    staff: [
+      { id: 1, name: 'Dr. Meera Gupta', role: 'Clinical Psychologist', experience: '15 years' },
+      { id: 2, name: 'Ms. Kavita Nair', role: 'Therapist', experience: '4 years' },
+      { id: 3, name: 'Mr. Karan Bose', role: 'Behavioral Therapist', experience: '5 years' }
+    ]
+  },
+  {
+    id: 5,
+    storeName: 'Rashi Lambe Therapy Store',
+    qualification: 'MSc. in Counseling Psychology',
+    specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
+    availableAt: 'Aug 28, 2024 3:00 PM',
+    image: 'https://via.placeholder.com/80',
+    staff: [
+      { id: 1, name: 'Dr. Sneha Bhatt', role: 'Clinical Psychologist', experience: '9 years' },
+      { id: 2, name: 'Mr. Ravi Sinha', role: 'Family Therapist', experience: '5 years' },
+      { id: 3, name: 'Ms. Sunita Verma', role: 'Mental Health Specialist', experience: '6 years' }
+    ]
+  },
+  {
+    id: 6,
+    storeName: 'Malvika Agarwal Therapy Store',
+    qualification: 'MA in Clinical Counseling',
+    specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
+    availableAt: 'Aug 28, 2024 3:00 PM',
+    image: 'https://via.placeholder.com/80',
+    staff: [
+      { id: 1, name: 'Dr. Aakash Verma', role: 'Psychiatrist', experience: '11 years' },
+      { id: 2, name: 'Ms. Anamika Gupta', role: 'Psychologist', experience: '4 years' },
+      { id: 3, name: 'Mr. Rajiv Kumar', role: 'Life Coach', experience: '7 years' }
+    ]
   }
-  
-  .hero-content {
-    max-width: 500px;
-    width: 100%;
-  }
-  
-  .hero-card {
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  }
-  
-  .therapists-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
-  </style>
-  
+]);
+</script>
+
+<style scoped>
+.bg-cover-container {
+  height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../assets/heroimage.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-content {
+  max-width: 500px;
+  width: 100%;
+}
+
+.hero-card {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.therapists-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+</style>
