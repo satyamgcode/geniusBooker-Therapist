@@ -55,28 +55,27 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import AppHeader from 'src/components/common/AppHeader.vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue';
+import AppHeader from 'src/components/common/AppHeader.vue';
+import { useRouter } from 'vue-router';
+import { useCustomerStore } from 'src/stores/customerStore';
 
-const router = useRouter()
+const router = useRouter();
+const customerStore = useCustomerStore();
 
-const formData = ref({
-  fullName: '',
-  phoneNumber: '',
-  sessionDuration: null,
-})
+const formData = ref(customerStore.formData);
 
 const sessionOptions = [
   { label: '30 minutes', value: '30' },
   { label: '60 minutes', value: '60' },
   { label: '90 minutes', value: '90' },
-]
+];
 
 const submitForm = () => {
-  console.log(formData.value)
-  router.push('/therapyStores')
-}
+  customerStore.setCustomerData(formData.value);
+  console.log(customerStore.formData);
+  router.push('/therapyStores');
+};
 </script>
 
 <style scoped>
@@ -84,10 +83,10 @@ const submitForm = () => {
   height: 100vh;
 }
 .bg-cover {
-    background-image: url('../assets/therapist-backgrounds.png');
-    background-size: cover;
-    background-position: center;
-  }
+  background-image: url('../assets/therapist-backgrounds.png');
+  background-size: cover;
+  background-position: center;
+}
 
 .custom-card {
   background: rgba(255, 255, 255, 0.3);

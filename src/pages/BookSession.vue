@@ -48,18 +48,8 @@
                 />
 
                 <q-input
-                  v-model="form.date"
-                  label="Select Date"
-                  readonly
-                  dense
-                  filled
-                  class="input-field cursor-pointer"
-                  @click="showDateDialog = true"
-                />
-
-                <q-input
                   v-model="form.time"
-                  label="Select Time"
+                  label="Select available date/Slot"
                   readonly
                   dense
                   filled
@@ -92,25 +82,25 @@
       </q-page>
     </q-page-container>
 
-    <q-dialog v-model="showDateDialog">
+    <q-dialog v-model="showTimeDialog" persistent>
       <q-card>
-        <q-date
-          v-model="form.date"
-          :options="(date) => availableDates.includes(date)"
-          @input="showDateDialog = false"
-        />
-      </q-card>
-    </q-dialog>
+        <q-card-section>
+          <h6 class="text-primary calendar-header">Select Available Time</h6>
+          <q-separator />
+        </q-card-section>
 
-    <q-dialog v-model="showTimeDialog">
-      <q-card>
-        <q-time
-          v-model="form.time"
-          format24h
-          :hour-options="hourOptionsTime1"
-          :minute-options="minuteOptionsTime1"
-          @input="showTimeDialog = false"
-        />
+        <q-card-section class="calendar-wrapper">
+          <FullCalendar
+            ref="fullCalendar"
+            :options="calendarOptions"
+            class="full-calendar"
+            @dateClick="handleDateClick"
+          />
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Close" @click="showTimeDialog = false" />
+        </q-card-actions>
       </q-card>
     </q-dialog>
   </q-layout>
@@ -120,36 +110,121 @@
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import AppHeader from 'src/components/common/AppHeader.vue';
+import FullCalendar from '@fullcalendar/vue3';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { useCustomerStore } from 'src/stores/customerStore';
+
+const customerStore = useCustomerStore();
+
+const fullCalendar = ref(null);
+
+
+const availableDates = [
+  {
+    title: 'Available',
+    start: '2024-09-01T10:00:00',
+    end: '2024-09-01T10:30:00',
+    backgroundColor: '#00FF00',
+    borderColor: '#00FF00',
+    editable: false,
+  }
+]
+
+const reservedEvents = [
+  {
+    title: 'Reserved',
+    start: '2024-09-04T11:00:00',
+    end: '2024-09-04T12:30:00',
+    backgroundColor: '#FF0000',
+    borderColor: '#FF0000',
+    editable: false,
+  },
+  {
+    title: 'Reserved',
+    start: '2024-09-04T16:00:00',
+    end: '2024-09-04T16:30:00',
+    backgroundColor: '#FF0000',
+    borderColor: '#FF0000',
+    editable: false,
+  },
+  {
+    title: 'Reserved',
+    start: '2024-09-04T10:00:00',
+    end: '2024-09-04T10:30:00',
+    backgroundColor: '#FF0000',
+    borderColor: '#FF0000',
+    editable: false,
+  },
+  {
+    title: 'Reserved',
+    start: '2024-09-06T12:00:00',
+    end: '2024-09-06T12:30:00',
+    backgroundColor: '#FF0000',
+    borderColor: '#FF0000',
+    editable: false,
+  },
+  {
+    title: 'Reserved',
+    start: '2024-09-07T14:00:00',
+    end: '2024-09-07T14:30:00',
+    backgroundColor: '#FF0000',
+    borderColor: '#FF0000',
+    editable: false,
+  },
+];
+
+const calendarOptions = ref({
+  plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+  initialView: 'timeGridDay',
+  slotDuration: '00:30:00',
+  slotLabelInterval: '01:00',
+  allDaySlot: false,
+  headerToolbar: {
+    start: '',
+    center: 'title',
+    end: 'prev,next',
+  },
+  height: 'auto', // Responsive height
+  editable: false,
+  selectable: true,
+  selectMirror: true,
+  dayMaxEvents: true, // Enable "more" link when too many events
+  events: reservedEvents // Correctly assign reservedEvents here
+});
 
 const $q = useQuasar();
 const isSubmitting = ref(false);
 
 const form = ref({
   name: '',
-  phone: '',
+  phone: customerStore.formData.phoneNumber,
   email: '',
   therapist: '',
   date: '',
   time: '',
-  notRobot: false
+  notRobot: false,
 });
 
-const showDateDialog = ref(false);
 const showTimeDialog = ref(false);
 
 const therapistOptions = ref(['Dr. John Doe', 'Dr. Jane Doe']);
-const availableDates = ref([ '2024/09/01', '2024/09/05', '2024/09/06', '2024/09/09', '2024/09/23' ]);
-    const  hourOptionsTime1= [ 9, 10, 11, 13, 15 ]
-    const  minuteOptionsTime1=[ 0, 15, 30, 45 ]
 
 const fetchTherapistSchedule = () => {
   // Fetch logic for therapist schedule
 };
 
+const handleDateClick = (info) => {
+  form.value.date = info.dateStr;
+  form.value.time = `${info.dateStr} ${info.view.calendar.options.slotLabelFormat}`;
+  showTimeDialog.value = false;
+};
+
 const handleSubmit = () => {
-  alert('Form submitted successfully');
   if (!form.value.notRobot) {
-    useQuasar().notify('Please check the "I am not a robot" checkbox');
+    $q.notify('Please check the "I am not a robot" checkbox');
+    return;
   }
 
   isSubmitting.value = true;
@@ -158,7 +233,7 @@ const handleSubmit = () => {
     isSubmitting.value = false;
     $q.notify({
       type: 'positive',
-      message: 'Booking request submitted!'
+      message: 'Booking request submitted!',
     });
 
     // Clear form
@@ -169,7 +244,7 @@ const handleSubmit = () => {
       therapist: null,
       date: null,
       time: null,
-      notRobot: false
+      notRobot: false,
     };
   }, 2000);
 };
@@ -206,5 +281,27 @@ const handleSubmit = () => {
 .booksession-form {
   max-width: 400px;
   margin: auto;
+}
+
+.calendar-wrapper {
+  min-height: 400px;
+}
+
+.calendar-header {
+  margin: unset !important;
+}
+
+.full-calendar {
+  width: 100%;
+  max-width: 100%;
+  margin: auto;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .full-calendar {
+    font-size: 0.85rem;
+  }
 }
 </style>
