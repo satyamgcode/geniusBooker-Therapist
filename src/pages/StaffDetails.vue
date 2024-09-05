@@ -49,6 +49,14 @@
                   />
                 </q-card-section>
               </q-card>
+              <div class="handle-staff">
+                <q-toggle
+                  v-model="staffMember.active"
+                  checked-icon="check"
+                  :label="staffMember.active ? 'Active' : 'Inactive'"
+                  color="green"
+                  unchecked-icon="clear"
+                />
               <q-btn
                 label="Remove Staff"
                 color="negative"
@@ -57,6 +65,7 @@
                 class="q-my-xs remove-staff-button"
                 @click="removeStaff(index)"
               />
+              </div>
             </q-card-section>
           </q-card>
           <div class="q-mt-lg handle-form-button">
@@ -136,7 +145,7 @@ const staff = ref([
     username: '',
     phone: '',
     email: '',
-    active: false,
+    active: true,
     role: '',
     password: '',
     schedule: '',
@@ -309,5 +318,9 @@ const saveEvent = () => {
 .responsive-calendar {
   max-width: 100%;
   height: auto;
+}
+.handle-staff{
+  display: flex;
+  justify-content: space-between;
 }
 </style>

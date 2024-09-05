@@ -6,7 +6,7 @@
         <div class="form-wrapper">
           <q-card flat bordered class="q-pa-sm booksession-form">
             <q-card-section class="text-center">
-              <h5 class="text-primary">Book an Appointment</h5>
+              <h5 class="text-primary gb-appointment">Book an Appointment</h5>
               <p>Fill in the details to schedule your session</p>
             </q-card-section>
 
@@ -18,24 +18,27 @@
                   filled
                   dense
                   class="input-field"
+                  :rules="[val => !!val || 'Name is required']"
                 />
 
                 <q-input
-                  v-model="form.phone"
-                  label="Phone Number"
-                  filled
-                  dense
-                  class="input-field"
-                />
-
-                <q-input
-                  v-model="form.email"
-                  label="Email (Optional)"
-                  filled
-                  dense
-                  placeholder="Enter your email (optional)"
-                  class="input-field"
-                />
+                      filled
+                      v-model="form.email"
+                      label="Email"
+                      dense
+                      type="email"
+                      class="q-my-sm"
+                      :rules="[val => !!val || 'Valid email is required']"
+                    />
+                    <q-input
+                      filled
+                      v-model="form.phone"
+                      label="Phone Number"
+                      dense
+                      mask="(###) ###-####"
+                      class="q-my-sm"
+                      :rules="[val => !!val || 'Phone number is required']"
+                    />
 
                 <q-select
                   v-model="form.therapist"
@@ -44,8 +47,19 @@
                   dense
                   :options="therapistOptions"
                   class="input-field"
+                  :rules="[val => !!val || 'Therapist is required']"  
                   @input="fetchTherapistSchedule"
                 />
+                <q-select
+                filled
+                v-model="form.sessionDuration"
+                label="Session Duration"
+                :options="sessionOptions"
+                outlined
+                dense
+                :rules="[val => !!val || 'Please select a session duration']"
+                class="custom-input"
+              />
 
                 <q-input
                   v-model="form.time"
@@ -120,18 +134,6 @@ const customerStore = useCustomerStore();
 
 const fullCalendar = ref(null);
 
-
-const availableDates = [
-  {
-    title: 'Available',
-    start: '2024-09-01T10:00:00',
-    end: '2024-09-01T10:30:00',
-    backgroundColor: '#00FF00',
-    borderColor: '#00FF00',
-    editable: false,
-  }
-]
-
 const reservedEvents = [
   {
     title: 'Reserved',
@@ -194,6 +196,13 @@ const calendarOptions = ref({
   events: reservedEvents // Correctly assign reservedEvents here
 });
 
+const sessionOptions = [
+  { label: '30 minutes', value: '30' },
+  { label: '60 minutes', value: '60' },
+  { label: '90 minutes', value: '90' },
+  { label: '120 minutes', value: '120' },
+];
+
 const $q = useQuasar();
 const isSubmitting = ref(false);
 
@@ -204,6 +213,7 @@ const form = ref({
   therapist: '',
   date: '',
   time: '',
+  sessionDuration: '',
   notRobot: false,
 });
 
@@ -222,6 +232,7 @@ const handleDateClick = (info) => {
 };
 
 const handleSubmit = () => {
+  alert('Form submitted!');
   if (!form.value.notRobot) {
     $q.notify('Please check the "I am not a robot" checkbox');
     return;
@@ -297,6 +308,10 @@ const handleSubmit = () => {
   margin: auto;
   overflow-x: auto;
   padding-bottom: 1rem;
+}
+.gb-appointment{
+  margin: unset !important;
+  margin-bottom: 10px !important;
 }
 
 @media (max-width: 768px) {
