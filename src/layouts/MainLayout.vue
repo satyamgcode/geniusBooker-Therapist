@@ -415,6 +415,9 @@ const navigateToStoreLogin = () => {
 .services-content {
   text-align: center;
 }
+.booking-btn{
+  border-radius: 20px;
+}
 
 @media (min-width: 600px) {
   .welcome-title {
@@ -443,7 +446,7 @@ const navigateToStoreLogin = () => {
 
 @media (max-width: 960px) {
   .mission-text {
-  font-size: 0.8rem;
+  font-size: 1rem;
   }
   .gb-inner-heading{
     margin: unset !important;

@@ -45,30 +45,39 @@
                   label="Select Therapist"
                   filled
                   dense
-                  :options="therapistOptions"
+                  :options="therapistoptionsRef"
+                  option-value="name"
                   class="input-field"
                   :rules="[val => !!val || 'Therapist is required']"  
                   @input="fetchTherapistSchedule"
                 />
-                <q-select
-                filled
-                v-model="form.sessionDuration"
-                label="Session Duration"
-                :options="sessionOptions"
-                outlined
-                dense
-                :rules="[val => !!val || 'Please select a session duration']"
-                class="custom-input"
-              />
 
                 <q-input
-                  v-model="form.time"
-                  label="Select available date/Slot"
+                v-model="form.date"
+                label="Select Date"
+                readonly
+                dense
+                filled
+                class="input-field cursor-pointer"
+                @click="showTimeDialog = true"
+                :rules="[val => !!val || 'Date is required']"
+                />
+
+                <q-input
+                  v-model="form.startTime"
+                  label="Session StartTime"
                   readonly
                   dense
                   filled
                   class="input-field cursor-pointer"
-                  @click="showTimeDialog = true"
+                />
+                <q-input
+                  v-model="form.endTime"
+                  label="Session EndTime"
+                  readonly
+                  dense
+                  filled
+                  class="input-field cursor-pointer"
                 />
 
                 <q-checkbox
@@ -108,12 +117,12 @@
             ref="fullCalendar"
             :options="calendarOptions"
             class="full-calendar"
-            @dateClick="handleDateClick"
           />
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Close" @click="showTimeDialog = false" />
+          <q-btn flat label="Save" color="positive" @click="saveSelectedDate" />
+          <q-btn flat label="Close" color="primary" @click="showTimeDialog = false" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -121,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref , computed } from 'vue';
 import { useQuasar } from 'quasar';
 import AppHeader from 'src/components/common/AppHeader.vue';
 import FullCalendar from '@fullcalendar/vue3';
@@ -129,6 +138,10 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useCustomerStore } from 'src/stores/customerStore';
+import { format } from 'date-fns';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const customerStore = useCustomerStore();
 
@@ -193,15 +206,16 @@ const calendarOptions = ref({
   selectable: true,
   selectMirror: true,
   dayMaxEvents: true, // Enable "more" link when too many events
-  events: reservedEvents // Correctly assign reservedEvents here
-});
+  events: reservedEvents,// Correctly assign reservedEvents here
+  select: (info) => {
+    form.value.date= format(info.start, 'yyyy-MM-dd'); ;
+    form.value.startTime = format(info.start, 'HH:mm a');
+    form.value.endTime= format(info.end, 'HH:mm a');
+    console.log(info.startStr)
+    console.log(info.endStr)
+  },
 
-const sessionOptions = [
-  { label: '30 minutes', value: '30' },
-  { label: '60 minutes', value: '60' },
-  { label: '90 minutes', value: '90' },
-  { label: '120 minutes', value: '120' },
-];
+});
 
 const $q = useQuasar();
 const isSubmitting = ref(false);
@@ -212,30 +226,46 @@ const form = ref({
   email: '',
   therapist: '',
   date: '',
-  time: '',
+  startTime: '',
+  endTime: '',
   sessionDuration: '',
   notRobot: false,
 });
 
 const showTimeDialog = ref(false);
 
-const therapistOptions = ref(['Dr. John Doe', 'Dr. Jane Doe']);
+const saveSelectedDate = () => {
+  showTimeDialog.value = false;
+};
+
+
+const therapistOptions = ref([
+  { name: 'John Doe', active: true },
+  { name: 'Jane Doe', active: false },
+  { name: 'Bob Smith', active: true },
+  { name: 'Sarah Johnson', active: false },
+  { name: 'Michael Brown', active: true },
+]);
+
+const therapistoptionsRef = computed(() => {
+  return therapistOptions.value.filter((item) => item.active).map((item) => ({ value: item.name, label: item.name }));
+})
 
 const fetchTherapistSchedule = () => {
   // Fetch logic for therapist schedule
 };
 
-const handleDateClick = (info) => {
-  form.value.date = info.dateStr;
-  form.value.time = `${info.dateStr} ${info.view.calendar.options.slotLabelFormat}`;
-  showTimeDialog.value = false;
-};
 
 const handleSubmit = () => {
-  alert('Form submitted!');
+  
   if (!form.value.notRobot) {
-    $q.notify('Please check the "I am not a robot" checkbox');
+    alert('Please check the "I am not a robot" checkbox');
     return;
+  }
+  else{
+    alert('Form submitted!');
+    router.push('/')
+
   }
 
   isSubmitting.value = true;
@@ -254,11 +284,14 @@ const handleSubmit = () => {
       email: '',
       therapist: null,
       date: null,
-      time: null,
+      startTime: null,
+      endTime : null ,
       notRobot: false,
     };
   }, 2000);
 };
+
+
 </script>
 
 <style scoped>
