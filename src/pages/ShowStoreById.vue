@@ -26,14 +26,18 @@
             <div class="text-h6 text-primary">Staff Details</div>
           </q-card-section>
           <q-separator />
-          <q-card-section v-for="(staffMember, index) in staffData" :key="index">
+          <q-card-section v-for="(staffMember, index) in formattedSchedules" :key="index">
             <div><strong>Name:</strong> {{ staffMember.name }}</div>
             <div><strong>Phone:</strong> {{ staffMember.phone }}</div>
             <div><strong>Email:</strong> {{ staffMember.email }}</div>
             <div><strong>Role:</strong> {{ staffMember.role }}</div>
             <div><strong>Schedule:</strong> {{ staffMember.schedule }}</div>
+            <div><strong>Available Days:</strong> {{ Array.isArray(staffMember.openingDays) ? staffMember.openingDays.join(', ') : '' }}</div>
+            <div><strong>Available Slots:</strong> {{ staffMember.formattedSchedule }}</div>
+            <div><strong>Active:</strong> {{ staffMember.active ? 'Yes' : 'No' }}</div>
             <q-separator />
           </q-card-section>
+
         </q-card>
         <div class="q-mt-lg handle-form-button">
           <q-btn label="Cancel" color="negative" @click="confirm = true" />
@@ -58,7 +62,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import AppHeader from 'src/components/common/AppHeader.vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -69,14 +73,32 @@ const storeData = JSON.parse(route.query.storeData || '{}')
 console.log('storeData:', storeData)
 const staffData = JSON.parse(route.query.staffData || '[]')
 
+// Computed property to format time slots for each staff member
+const formattedSchedules = computed(() => {
+  return staffData.map(staffMember => {
+    if (!Array.isArray(staffMember.customSchedule)) return '';
+
+    const formattedSlots = staffMember.customSchedule.map(slot => {
+      const startTime = new Date(slot.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const endTime = new Date(slot.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return `${startTime}-${endTime}`;
+    });
+    return {
+      ...staffMember,
+      formattedSchedule: formattedSlots.join(', ')
+    };
+  });
+});
+
 function resetForm() {
   router.go(-1)
 }
-const continueStoreCreation = () => {
-  router.push({ path: 'storePackages', query: { storeData: JSON.stringify(storeData), staffData: JSON.stringify(staffData) } })
-}
 
+const continueStoreCreation = () => {
+  router.push({ path: 'storePackages'})
+}
 </script>
+
 
 <style scoped>
 .page-content {

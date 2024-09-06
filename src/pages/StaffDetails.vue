@@ -9,14 +9,7 @@
             <q-card-section>
               <div class="text-h6 text-primary flex justify-between">
                 <span>Staff Details</span>
-                <img
-                  src="src/assets/icons/addStaff.svg"
-                  outline
-                  alt="Add Staff"
-                  dense
-                  class="cursor-pointer"
-                  @click="addStaff"
-                />
+                <q-icon name="person_add" size="30px" class="addstaff" color="primary" @click="addStaff" />
               </div>
             </q-card-section>
             <q-separator />
@@ -45,8 +38,40 @@
                     :options="staffSchedules"
                     label="Schedule"
                     dense
-                    @update:model-value="showScheduleDialog(index)"
+                    class="q-mb-sm"
+                    @update:model-value="(value) => {
+                      staffMember.schedule = value;
+                      if (value === 'Customize Schedule') {
+                        showScheduleDialog(index);
+                      }
+                    }"
                   />
+                  <q-select
+                    filled
+                    v-if="staffMember.schedule === 'Customize Schedule'"
+                    v-model="staffMember.openingDays"
+                    :options="daysOfWeek"
+                    label="available Days"
+                    dense
+                    multiple
+                    use-chips
+                    emit-value
+                    map-options
+                    class="q-mb-sm"
+                    >
+                    <template v-slot:option="scope">
+                      <q-item>
+                        <q-item-section>
+                          <q-checkbox
+                            v-model="staffMember.openingDays"
+                            :label="scope.opt.label"
+                            :val="scope.opt.value"
+                            dense
+                          />
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
                 </q-card-section>
               </q-card>
               <div class="handle-staff">
@@ -57,14 +82,14 @@
                   color="green"
                   unchecked-icon="clear"
                 />
-              <q-btn
-                label="Remove Staff"
-                color="negative"
-                outline
-                dense
-                class="q-my-xs remove-staff-button"
-                @click="removeStaff(index)"
-              />
+                <q-btn
+                  label="Remove Staff"
+                  color="negative"
+                  outline
+                  dense
+                  class="q-my-xs remove-staff-button"
+                  @click="removeStaff(index)"
+                />
               </div>
             </q-card-section>
           </q-card>
@@ -87,20 +112,24 @@
         </q-form>
 
         <!-- Customize Schedule Dialog -->
-        <q-dialog v-model="scheduleDialogOpen">
-          <q-card style="min-width: 300px; max-width: 90vw;">
+        <q-dialog v-model="scheduleDialogOpen" persistent @show="onDialogShow">
+          <q-card>
             <q-card-section>
-              <vue-cal
-                :time="true"
-                :events="staff[selectedStaffIndex]?.customSchedule || []"
-                @event-click="onEventClick"
-                @cell-click="onCellClick"
-                class="responsive-calendar"
+              <h6 class="text-primary calendar-header">Select Available Time</h6>
+              <q-separator />
+            </q-card-section>
+
+            <q-card-section class="calendar-wrapper">
+              <FullCalendar
+                ref="fullCalendar"
+                :options="calendarOptions"
+                class="full-calendar"
               />
             </q-card-section>
+
             <q-card-actions align="right">
-              <q-btn flat label="Close" color="primary" v-close-popup />
-              <q-btn flat label="Save" color="positive" v-close-popup />
+              <q-btn flat label="Close" color="primary" @click="scheduleDialogOpen = false" />
+              <q-btn flat label="Save" color="positive" @click="saveSelectedDate" />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -110,9 +139,11 @@
           <q-card>
             <q-card-section>
               <div class="text-h6">Event Details</div>
-              <q-input filled v-model="eventForm.title" label="Event Title" />
+              <q-input filled v-model="eventForm.title" label="Enter schedule" />
               <q-input filled v-model="eventForm.start" label="Start Time" type="datetime-local" />
               <q-input filled v-model="eventForm.end" label="End Time" type="datetime-local" />
+              <q-input filled v-model="eventForm.color" label="Event Color" type="color" class="q-mb-sm" />
+
             </q-card-section>
             <q-card-actions align="right">
               <q-btn flat label="Cancel" color="primary" v-close-popup />
@@ -126,19 +157,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
+import FullCalendar from '@fullcalendar/vue3';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 import AppHeader from 'src/components/common/AppHeader.vue';
 import { useAuthStore } from 'src/stores/AuthStore';
-import VueCal from 'vue-cal';
-import 'vue-cal/dist/vuecal.css';
+import { format } from 'date-fns';
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const fullCalendar = ref(null);
 
 const store = ref(JSON.parse(route.query.storeData));
+
+const daysOfWeek = [
+  { label: 'Monday', value: 'Monday' },
+  { label: 'Tuesday', value: 'Tuesday' },
+  { label: 'Wednesday', value: 'Wednesday' },
+  { label: 'Thursday', value: 'Thursday' },
+  { label: 'Friday', value: 'Friday' },
+  { label: 'Saturday', value: 'Saturday' },
+  { label: 'Sunday', value: 'Sunday' }
+]
 
 const staff = ref([
   {
@@ -149,7 +194,8 @@ const staff = ref([
     role: '',
     password: '',
     schedule: '',
-    customSchedule: [], // Initialize as an empty array
+    customSchedule: [],
+    openingDays: [],
   },
 ]);
 
@@ -165,6 +211,7 @@ const eventForm = ref({
   title: '',
   start: '',
   end: '',
+  color: '#21BA45',
 });
 
 const addStaff = () => {
@@ -176,7 +223,8 @@ const addStaff = () => {
     role: '',
     password: '',
     schedule: '',
-    customSchedule: [], // Initialize as an empty array
+    customSchedule: [],
+    openingDays: [],
   });
 };
 
@@ -184,8 +232,58 @@ const removeStaff = (index) => {
   staff.value.splice(index, 1);
 };
 
+const saveSelectedDate = () => {
+  if (selectedStaffIndex.value !== null) {
+    staff.value[selectedStaffIndex.value].customSchedule = [...fullCalendar.value.getApi().getEvents().map(event => ({
+      title: event.title,
+      start: format(event.start, 'yyyy-MM-dd HH:mm:ss'),
+      end: format(event.end, 'yyyy-MM-dd HH:mm:ss'),
+      backgroundColor: event.backgroundColor,
+      borderColor: event.borderColor,
+      editable: event.editable
+    }))]; // Save the schedule for the specific staff member
+  }
+  scheduleDialogOpen.value = false;
+};
+
 const goBack = () => {
   router.back();
+};
+
+const calendarOptions = ref({
+  plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+  initialView: 'timeGridDay',
+  slotDuration: '00:30:00',
+  slotLabelInterval: '01:00',
+  allDaySlot: false,
+  headerToolbar: {
+    start: '',
+    center: 'title',
+    end: 'timeGridWeek,timeGridDay prev,next',
+  },
+  height: 'auto',
+  editable: true,
+  selectable: true,
+  selectMirror: true,
+  dayMaxEvents: true,
+  events: [],
+  select: (info) => {
+    eventDialogOpen.value = true;
+    eventForm.value.start = format(info.start, 'yyyy-MM-dd HH:mm:ss');
+    eventForm.value.end = format(info.end, 'yyyy-MM-dd HH:mm:ss');
+  },
+});
+
+const onDialogShow = async () => {
+  await nextTick(); // Ensures DOM updates
+  if (fullCalendar.value && selectedStaffIndex.value !== null) {
+    fullCalendar.value.getApi().removeAllEvents();
+    const events = staff.value[selectedStaffIndex.value].customSchedule;
+    events.forEach((event) => {
+      fullCalendar.value.getApi().addEvent(event);
+    });
+    fullCalendar.value.getApi().updateSize(); // Re-render the calendar
+  }
 };
 
 const handleSubmitFromCreateStore = async () => {
@@ -237,6 +335,7 @@ const handleSubmit = async () => {
   }
 };
 
+
 const submitForm = async () => {
   await handleSubmitFromCreateStore();
   await handleSubmit();
@@ -247,6 +346,7 @@ const submitForm = async () => {
       staffData: JSON.stringify(staff.value),
     },
   });
+  console.lof(staff.value);
 };
 
 const showScheduleDialog = (index) => {
@@ -256,45 +356,33 @@ const showScheduleDialog = (index) => {
   }
 };
 
-const onCellClick = ({ startDateTime, endDateTime }) => {
-  // Show event dialog to add new event
-  eventForm.value = {
-    id: null,
-    title: '',
-    start: startDateTime,
-    end: endDateTime,
-  };
-  eventDialogOpen.value = true;
-};
-
-const onEventClick = (event) => {
-  // Show event dialog to edit existing event
-  eventForm.value = { ...event };
-  eventDialogOpen.value = true;
-};
-
 const saveEvent = () => {
-  if (selectedStaffIndex.value === null) return;
-
-  const eventIndex = staff.value[selectedStaffIndex.value].customSchedule.findIndex(
-    (e) => e.id === eventForm.value.id
-  );
-
-  if (eventIndex > -1) {
-    // Update existing event
-    staff.value[selectedStaffIndex.value].customSchedule[eventIndex] = { ...eventForm.value };
-  } else {
-    // Add new event
+  if (eventForm.value.title && eventForm.value.start && eventForm.value.end) {
     const newEvent = {
-      ...eventForm.value,
-      id: Date.now(), // Assign a unique ID
+      title: eventForm.value.title,
+      start: eventForm.value.start,
+      end: eventForm.value.end,
+      backgroundColor: eventForm.value.color,
+      borderColor: eventForm.value.color,
+      editable: true,
     };
-    staff.value[selectedStaffIndex.value].customSchedule.push(newEvent);
-  }
 
-  eventDialogOpen.value = false; // Close the dialog
+    fullCalendar.value.getApi().addEvent(newEvent);
+
+    // Save the event for the selected staff member
+    saveSelectedDate();
+
+    eventForm.value = { id: null, title: '', start: '', end: '' , color: '#21BA45' };
+    eventDialogOpen.value = false;
+
+    scheduleDialogOpen.value = false;
+    setTimeout(() => {
+      showScheduleDialog(selectedStaffIndex.value);
+    }, 100);
+  }
 };
 </script>
+
 
 <style scoped>
 .q-card {
@@ -314,6 +402,16 @@ const saveEvent = () => {
   justify-content: flex-end;
   gap: 10px;
 }
+.calendar-wrapper {
+  min-height: 400px;
+}
+.full-calendar {
+  width: 100%;
+  max-width: 100%;
+  margin: auto;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
 
 .responsive-calendar {
   max-width: 100%;
@@ -322,5 +420,11 @@ const saveEvent = () => {
 .handle-staff{
   display: flex;
   justify-content: space-between;
+}
+.calendar-header {
+  margin: unset !important;
+}
+.addstaff{
+  cursor: pointer !important;
 }
 </style>

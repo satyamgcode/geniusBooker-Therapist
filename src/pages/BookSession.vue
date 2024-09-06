@@ -22,23 +22,22 @@
                 />
 
                 <q-input
-                      filled
-                      v-model="form.email"
-                      label="Email"
-                      dense
-                      type="email"
-                      class="q-my-sm"
-                      :rules="[val => !!val || 'Valid email is required']"
-                    />
-                    <q-input
-                      filled
-                      v-model="form.phone"
-                      label="Phone Number"
-                      dense
-                      mask="(###) ###-####"
-                      class="q-my-sm"
-                      :rules="[val => !!val || 'Phone number is required']"
-                    />
+                  filled
+                  v-model="form.email"
+                  label="Email(Optional)"
+                  dense
+                  type="email"
+                  class="q-my-sm email-margin"
+                />
+                <q-input
+                  filled
+                  v-model="form.phone"
+                  label="Phone Number"
+                  dense
+                  mask="(###) ###-####"
+                  class="q-my-sm"
+                  :rules="[val => !!val || 'Phone number is required']"
+                />
 
                 <q-select
                   v-model="form.therapist"
@@ -53,14 +52,14 @@
                 />
 
                 <q-input
-                v-model="form.date"
-                label="Select Date"
-                readonly
-                dense
-                filled
-                class="input-field cursor-pointer"
-                @click="showTimeDialog = true"
-                :rules="[val => !!val || 'Date is required']"
+                  v-model="form.date"
+                  label="Book a time"
+                  readonly
+                  dense
+                  filled
+                  class="input-field"
+                  @click="showTimeDialog = true"
+                  :rules="[val => !!val || 'Date is required']"
                 />
 
                 <q-input
@@ -105,7 +104,7 @@
       </q-page>
     </q-page-container>
 
-    <q-dialog v-model="showTimeDialog" persistent>
+    <q-dialog v-model="showTimeDialog" persistent @show="onDialogShow">
       <q-card>
         <q-card-section>
           <h6 class="text-primary calendar-header">Select Available Time</h6>
@@ -121,8 +120,8 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Save" color="positive" @click="saveSelectedDate" />
           <q-btn flat label="Close" color="primary" @click="showTimeDialog = false" />
+          <q-btn flat label="Save" color="positive" @click="saveSelectedDate" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -130,7 +129,7 @@
 </template>
 
 <script setup>
-import { ref , computed } from 'vue';
+import { ref , computed, nextTick } from 'vue';
 import { useQuasar } from 'quasar';
 import AppHeader from 'src/components/common/AppHeader.vue';
 import FullCalendar from '@fullcalendar/vue3';
@@ -142,7 +141,6 @@ import { format } from 'date-fns';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-
 const customerStore = useCustomerStore();
 
 const fullCalendar = ref(null);
@@ -201,20 +199,17 @@ const calendarOptions = ref({
     center: 'title',
     end: 'prev,next',
   },
-  height: 'auto', // Responsive height
+  height: 'auto',
   editable: false,
   selectable: true,
   selectMirror: true,
-  dayMaxEvents: true, // Enable "more" link when too many events
-  events: reservedEvents,// Correctly assign reservedEvents here
+  dayMaxEvents: true,
+  events: reservedEvents,
   select: (info) => {
-    form.value.date= format(info.start, 'yyyy-MM-dd'); ;
-    form.value.startTime = format(info.start, 'HH:mm a');
-    form.value.endTime= format(info.end, 'HH:mm a');
-    console.log(info.startStr)
-    console.log(info.endStr)
+    form.value.date = format(info.start, 'yyyy-MM-dd');
+    form.value.startTime = format(info.start, 'HH:mm');
+    form.value.endTime = format(info.end, 'HH:mm');
   },
-
 });
 
 const $q = useQuasar();
@@ -238,6 +233,12 @@ const saveSelectedDate = () => {
   showTimeDialog.value = false;
 };
 
+const onDialogShow = async () => {
+  await nextTick(); // Ensures DOM updates
+  if (fullCalendar.value) {
+    fullCalendar.value.getApi().updateSize(); // Re-render the calendar
+  }
+};
 
 const therapistOptions = ref([
   { name: 'John Doe', active: true },
@@ -249,23 +250,19 @@ const therapistOptions = ref([
 
 const therapistoptionsRef = computed(() => {
   return therapistOptions.value.filter((item) => item.active).map((item) => ({ value: item.name, label: item.name }));
-})
+});
 
 const fetchTherapistSchedule = () => {
   // Fetch logic for therapist schedule
 };
 
-
 const handleSubmit = () => {
-  
   if (!form.value.notRobot) {
     alert('Please check the "I am not a robot" checkbox');
     return;
-  }
-  else{
+  } else {
     alert('Form submitted!');
-    router.push('/')
-
+    router.push('/');
   }
 
   isSubmitting.value = true;
@@ -285,14 +282,13 @@ const handleSubmit = () => {
       therapist: null,
       date: null,
       startTime: null,
-      endTime : null ,
+      endTime: null,
       notRobot: false,
     };
   }, 2000);
 };
-
-
 </script>
+
 
 <style scoped>
 .page-wrapper {
@@ -345,6 +341,9 @@ const handleSubmit = () => {
 .gb-appointment{
   margin: unset !important;
   margin-bottom: 10px !important;
+}
+.email-margin{
+  margin-bottom: 35px !important;
 }
 
 @media (max-width: 768px) {
