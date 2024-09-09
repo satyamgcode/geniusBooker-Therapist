@@ -125,6 +125,21 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="eventDialogOpen" persistent>
+          <q-card class="event-card">
+            <q-card-section>
+              <div class="text-h6">Event Details</div>
+              <q-input filled v-model="eventForm.start" label="Start Time" type="time" />
+              <q-input filled v-model="eventForm.end" label="End Time" type="time" />
+              <q-input filled v-model="eventForm.color" label="Event Color" type="color" class="q-mb-sm" />
+
+            </q-card-section>
+            <q-card-actions align="right">
+              <q-btn flat label="Cancel" color="primary" v-close-popup />
+              <q-btn flat label="Save" color="primary" @click="saveEvent" />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
   </q-layout>
 </template>
 
@@ -144,6 +159,13 @@ const router = useRouter();
 const customerStore = useCustomerStore();
 
 const fullCalendar = ref(null);
+const eventDialogOpen = ref(false);
+const eventForm = ref({
+  id: null,
+  start: '',
+  end: '',
+  color: '#21BA45',
+});
 
 const reservedEvents = [
   {
@@ -207,9 +229,10 @@ const calendarOptions = ref({
   events: reservedEvents,
   nowIndicator: true,
   select: (info) => {
+    eventDialogOpen.value = true;
     form.value.date = format(info.start, 'yyyy-MM-dd');
-    form.value.startTime = format(info.start, 'HH:mm');
-    form.value.endTime = format(info.end, 'HH:mm');
+    eventForm.value.start = format(info.start, 'HH:mm');
+    eventForm.value.end = format(info.end, 'HH:mm');
   },
 });
 
@@ -241,6 +264,18 @@ const onDialogShow = async () => {
       fullCalendar.value.getApi().updateSize(); 
     }
   }, 300);
+};
+
+const saveEvent = () => {
+  if (eventForm.value.start && eventForm.value.end) {
+
+    form.value.startTime = eventForm.value.start;
+    form.value.endTime = eventForm.value.end;
+
+    eventForm.value = { id: null, title: '', start: '', end: '' , color: '#21BA45' };
+    eventDialogOpen.value = false;
+    showTimeDialog.value = false;
+  }
 };
 
 const therapistOptions = ref([
@@ -277,7 +312,6 @@ const handleSubmit = () => {
       message: 'Booking request submitted!',
     });
 
-    // Clear form
     form.value = {
       name: '',
       phone: '',
@@ -347,6 +381,9 @@ const handleSubmit = () => {
 }
 .email-margin{
   margin-bottom: 35px !important;
+}
+.event-card{
+  min-width: 250px !important;
 }
 
 @media (max-width: 768px) {
