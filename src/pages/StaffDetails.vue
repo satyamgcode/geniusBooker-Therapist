@@ -266,6 +266,7 @@ const calendarOptions = ref({
   selectable: true,
   selectMirror: true,
   dayMaxEvents: true,
+  nowIndicator: true,
   events: [],
   select: (info) => {
     eventDialogOpen.value = true;
@@ -282,7 +283,11 @@ const onDialogShow = async () => {
     events.forEach((event) => {
       fullCalendar.value.getApi().addEvent(event);
     });
-    fullCalendar.value.getApi().updateSize(); // Re-render the calendar
+    setTimeout(() => {
+    if (fullCalendar.value) {
+      fullCalendar.value.getApi().updateSize(); 
+    }
+  }, 300);
   }
 };
 
@@ -384,7 +389,7 @@ const saveEvent = () => {
 </script>
 
 
-<style scoped>
+<style>
 .q-card {
   border: 1px solid #1e88e5;
 }
@@ -426,5 +431,10 @@ const saveEvent = () => {
 }
 .addstaff{
   cursor: pointer !important;
+}
+@media (max-width: 500px) {
+  .fc .fc-toolbar.fc-header-toolbar {
+    flex-direction: column !important;
+}
 }
 </style>

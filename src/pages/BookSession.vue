@@ -205,6 +205,7 @@ const calendarOptions = ref({
   selectMirror: true,
   dayMaxEvents: true,
   events: reservedEvents,
+  nowIndicator: true,
   select: (info) => {
     form.value.date = format(info.start, 'yyyy-MM-dd');
     form.value.startTime = format(info.start, 'HH:mm');
@@ -234,10 +235,12 @@ const saveSelectedDate = () => {
 };
 
 const onDialogShow = async () => {
-  await nextTick(); // Ensures DOM updates
-  if (fullCalendar.value) {
-    fullCalendar.value.getApi().updateSize(); // Re-render the calendar
-  }
+  await nextTick(); 
+  setTimeout(() => {
+    if (fullCalendar.value) {
+      fullCalendar.value.getApi().updateSize(); 
+    }
+  }, 300);
 };
 
 const therapistOptions = ref([
