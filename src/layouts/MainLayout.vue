@@ -84,6 +84,20 @@
             </q-card>
           </div>
         </div>
+        <div class="gb-handle-staff">
+          <q-btn
+            class="feature-btn q-mt-xl"
+            color="primary"
+            label="Therapist Login"
+            @click="navigateToTherapistLogin"
+          />
+          <q-btn
+            class="feature-btn q-mt-xl"
+            color="positive"
+            label="Manager Login"
+            @click="navigateToManagerLogin"
+          />
+        </div>
       </q-page>
 
       <!-- Booking Section -->
@@ -204,6 +218,13 @@ const handleBooking = () => {
 const navigateToStoreLogin = () => {
   router.push('/owner/signup')
 }
+const navigateToTherapistLogin = () => {
+  router.push('/therapist-login')
+}
+const navigateToManagerLogin = () => {
+  router.push('/manager-login')
+}
+
 </script>
 
 <style scoped>
@@ -417,6 +438,17 @@ const navigateToStoreLogin = () => {
 }
 .booking-btn{
   border-radius: 20px;
+}
+.gb-handle-staff{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.feature-btn{
+  border-radius: 25px;
 }
 
 @media (min-width: 600px) {

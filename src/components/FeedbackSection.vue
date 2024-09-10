@@ -81,7 +81,15 @@
       businessType: 'Spa & Wellness',
       review: 'Managing my business has never been easier. From scheduling to staff management, Genius Booker has it all!',
       avatarColor: 'positive',
-    }
+    },
+    {
+      clientName: 'Sarah Williams',
+      storeName: 'Relaxation Studio',
+      businessType: 'Massage Therapy',
+      review: 'Genius Booker has been an absolute lifesaver. I can now focus on my business and my clients.',
+      avatarColor: 'accent',
+    },
+    
   ]);
   </script>
   

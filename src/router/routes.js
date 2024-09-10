@@ -50,6 +50,22 @@ const routes = [
   {
     path : '/book-session',
     component: () => import('pages/BookSession.vue'),
+  },
+  {
+    path : '/therapist-login',
+    component: () => import('pages/TherapistLogin.vue'),
+  },
+  {
+    path : '/manager-login',
+    component: () => import('pages/ManagerLogin.vue'),
+  },
+  {
+    path:'/therapist-dashboard',
+    component: () => import('pages/TherapistDashboard.vue'),
+  },
+  {
+    path : '/manager-dashboard',
+    component: () => import('pages/ManagerDashboard.vue'),
   }
 
 

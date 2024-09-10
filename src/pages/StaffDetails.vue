@@ -352,7 +352,7 @@ const submitForm = async () => {
       staffData: JSON.stringify(staff.value),
     },
   });
-  console.lof(staff.value);
+  console.log(staff.value);
 };
 
 const showScheduleDialog = (index) => {
