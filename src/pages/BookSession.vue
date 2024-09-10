@@ -126,20 +126,19 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="eventDialogOpen" persistent>
-          <q-card class="event-card">
-            <q-card-section>
-              <div class="text-h6">Event Details</div>
-              <q-input filled v-model="eventForm.start" label="Start Time" type="time" />
-              <q-input filled v-model="eventForm.end" label="End Time" type="time" />
-              <q-input filled v-model="eventForm.color" label="Event Color" type="color" class="q-mb-sm" />
-
-            </q-card-section>
-            <q-card-actions align="right">
-              <q-btn flat label="Cancel" color="primary" v-close-popup />
-              <q-btn flat label="Save" color="primary" @click="saveEvent" />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
+      <q-card class="event-card">
+        <q-card-section>
+          <div class="text-h6">Event Details</div>
+          <q-input filled v-model="eventForm.start" label="Start Time" type="time" />
+          <q-input filled v-model="eventForm.end" label="End Time" type="time" />
+          <q-input filled v-model="eventForm.color" label="Event Color" type="color" class="q-mb-sm" />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup />
+          <q-btn flat label="Save" color="primary" @click="saveEvent" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
@@ -213,7 +212,7 @@ const reservedEvents = [
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
   initialView: 'timeGridDay',
-  slotDuration: '00:30:00',
+  slotDuration: '01:00:00',
   slotLabelInterval: '01:00',
   allDaySlot: false,
   headerToolbar: {
@@ -225,15 +224,15 @@ const calendarOptions = ref({
   editable: false,
   selectable: true,
   selectMirror: true,
-  dayMaxEvents: true,
-  events: reservedEvents,
-  nowIndicator: true,
+  longPressDelay: 0,
   select: (info) => {
     eventDialogOpen.value = true;
     form.value.date = format(info.start, 'yyyy-MM-dd');
     eventForm.value.start = format(info.start, 'HH:mm');
     eventForm.value.end = format(info.end, 'HH:mm');
   },
+  events: reservedEvents,
+  nowIndicator: true,
 });
 
 const $q = useQuasar();

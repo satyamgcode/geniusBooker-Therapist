@@ -87,7 +87,7 @@
                   color="negative"
                   outline
                   dense
-                  class="q-my-xs remove-staff-button"
+                  class="q-my-sm remove-staff-button"
                   @click="removeStaff(index)"
                 />
               </div>
@@ -253,7 +253,7 @@ const goBack = () => {
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
   initialView: 'timeGridDay',
-  slotDuration: '00:30:00',
+  slotDuration: '01:00:00',
   slotLabelInterval: '01:00',
   allDaySlot: false,
   headerToolbar: {
@@ -267,6 +267,7 @@ const calendarOptions = ref({
   selectMirror: true,
   dayMaxEvents: true,
   nowIndicator: true,
+  longPressDelay: 0,
   events: [],
   select: (info) => {
     eventDialogOpen.value = true;
@@ -389,7 +390,7 @@ const saveEvent = () => {
 </script>
 
 
-<style>
+<style scoped>
 .q-card {
   border: 1px solid #1e88e5;
 }
@@ -432,9 +433,5 @@ const saveEvent = () => {
 .addstaff{
   cursor: pointer !important;
 }
-@media (max-width: 500px) {
-  .fc .fc-toolbar.fc-header-toolbar {
-    flex-direction: column !important;
-}
-}
+
 </style>
