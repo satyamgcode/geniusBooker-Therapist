@@ -250,6 +250,11 @@ const goBack = () => {
   router.back();
 };
 
+const getCurrentTime = () => {
+  const now = new Date();
+  return now.toISOString().slice(11, 16);
+};
+
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
   initialView: 'timeGridDay',
@@ -261,13 +266,12 @@ const calendarOptions = ref({
     center: 'title',
     end: 'timeGridWeek,timeGridDay prev,next',
   },
-  height: 'auto',
+  height: '70vh',
   editable: true,
   selectable: true,
   selectMirror: true,
-  dayMaxEvents: true,
   nowIndicator: true,
-  longPressDelay: 0,
+  longPressDelay: 50,
   events: [],
   select: (info) => {
     eventDialogOpen.value = true;
@@ -287,6 +291,7 @@ const onDialogShow = async () => {
     setTimeout(() => {
     if (fullCalendar.value) {
       fullCalendar.value.getApi().updateSize(); 
+      fullCalendar.value.getApi().scrollToTime(getCurrentTime());
     }
   }, 300);
   }
@@ -407,9 +412,6 @@ const saveEvent = () => {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-}
-.calendar-wrapper {
-  min-height: 400px;
 }
 .full-calendar {
   width: 100%;

@@ -209,6 +209,11 @@ const reservedEvents = [
   },
 ];
 
+const getCurrentTime = () => {
+  const now = new Date();
+  return now.toISOString().slice(11, 16);
+};
+
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
   initialView: 'timeGridDay',
@@ -220,11 +225,11 @@ const calendarOptions = ref({
     center: 'title',
     end: 'prev,next',
   },
-  height: 'auto',
+  height: '70vh',
   editable: false,
   selectable: true,
   selectMirror: true,
-  longPressDelay: 0,
+  longPressDelay: 50,
   select: (info) => {
     eventDialogOpen.value = true;
     form.value.date = format(info.start, 'yyyy-MM-dd');
@@ -260,7 +265,8 @@ const onDialogShow = async () => {
   await nextTick(); 
   setTimeout(() => {
     if (fullCalendar.value) {
-      fullCalendar.value.getApi().updateSize(); 
+      fullCalendar.value.getApi().updateSize();
+      fullCalendar.value.getApi().scrollToTime(getCurrentTime());
     }
   }, 300);
 };
@@ -357,10 +363,6 @@ const handleSubmit = () => {
 .booksession-form {
   max-width: 400px;
   margin: auto;
-}
-
-.calendar-wrapper {
-  min-height: 400px;
 }
 
 .calendar-header {

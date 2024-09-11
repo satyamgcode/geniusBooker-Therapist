@@ -5,5 +5,16 @@
   }
 
  tbody tr{
-  height: 50px;
+  height: 40px;
  } 
+
+ .calendar-wrapper {
+  min-height: 400px;
+  min-width: 30vw !important;
+}
+
+@media (max-width: 424px) {
+  .calendar-wrapper {
+    min-width: 80vw !important;
+  }
+}
