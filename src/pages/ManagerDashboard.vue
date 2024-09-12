@@ -88,6 +88,15 @@
                 </div>
               </div>
             </q-card-section>
+            <q-separator />
+                <q-btn
+                  color="positive"
+                  class="feature-btn q-mt-am"
+                  icon="schedule"
+                  label="customize schedule"
+                  flat
+                  @click="handleScheduleChange"
+            />
           </q-card>
 
           <!-- Available Therapists Section -->
@@ -136,6 +145,7 @@
         </div>
       </div>
     </q-page-container>
+    <TherapistCalendar :scheduleDialogOpen="showScheduleDialog" class="calendar-wrapper" />
   </q-layout>
 </template>
 
@@ -143,9 +153,17 @@
 import { ref, watch } from 'vue';
 import AppHeader from 'src/components/common/AppHeader.vue';
 import BookingCards from 'src/components/cardsection/BookingCards.vue';
+import TherapistCalendar from 'src/components/common/TherapistCalendar.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
+const showScheduleDialog = ref(false);
+
+const handleScheduleChange = () => {
+  console.log('Schedule changed');
+  showScheduleDialog.value = !showScheduleDialog.value;
+}
 
 const managerDetails = ref({
   storeName: 'Therapist Wellness Center',

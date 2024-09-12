@@ -228,10 +228,10 @@ const calendarOptions = ref({
     end: 'prev,next',
   },
   height: '70vh',
-  editable: false,
+  editable: true,
   selectable: true,
   selectMirror: true,
-  longPressDelay: 50,
+  longPressDelay: 40,
   select: (info) => {
     eventDialogOpen.value = true;
     form.value.date = format(info.start, 'yyyy-MM-dd');

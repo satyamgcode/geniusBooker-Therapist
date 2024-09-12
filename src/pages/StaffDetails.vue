@@ -271,7 +271,7 @@ const calendarOptions = ref({
   selectable: true,
   selectMirror: true,
   nowIndicator: true,
-  longPressDelay: 50,
+  longPressDelay: 40,
   events: [],
   select: (info) => {
     eventDialogOpen.value = true;

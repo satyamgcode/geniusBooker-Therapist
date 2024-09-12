@@ -9,7 +9,7 @@
  } 
 
  .calendar-wrapper {
-  min-height: 400px;
+  min-height: 400px !important;
   min-width: 30vw !important;
 }
 

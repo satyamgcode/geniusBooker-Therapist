@@ -21,6 +21,15 @@
                   flat
                   @click="isEditing = true"
                 />
+                <div class="handle-edit-save">
+                  <q-btn
+                v-if="isEditing"
+                color="negative"
+                icon="cancel"
+                label="Cancel"
+                flat
+                @click="cancelEditing"
+              />
                 <q-btn
                   v-if="isEditing"
                   color="positive"
@@ -29,6 +38,7 @@
                   flat
                   @click="saveTherapistDetails"
                 />
+                </div>
               </div>
             </q-card-section>
             <q-separator />
@@ -92,6 +102,16 @@
                 </div>
               </div>
             </q-card-section>
+            <q-separator />
+                <q-btn
+                  color="positive"
+                  class="feature-btn q-mt-am"
+                  icon="schedule"
+                  label="customize schedule"
+                  flat
+                  @click="handleScheduleChange"
+            />
+
           </q-card>
   
           <!-- Pending and Confirmed Bookings Panels -->
@@ -196,12 +216,16 @@
           </div>
         </div>
       </q-page-container>
+      <!-- <v-dialog v-model="showScheduleDialog"> -->
+        <TherapistCalendar :scheduleDialogOpen="showScheduleDialog" class="calendar-wrapper" />
+      <!-- </v-dialog> -->
     </q-layout>
   </template>
   
   <script setup>
   import { ref } from 'vue';
   import AppHeader from 'src/components/common/AppHeader.vue';
+  import TherapistCalendar from 'src/components/common/TherapistCalendar.vue';
   
   const therapistDetails = ref({
     storeName: 'Therapist Wellness Center',
@@ -214,9 +238,20 @@
   
   const isEditing = ref(false);
   
+  const showScheduleDialog = ref(false);
+
+  const handleScheduleChange = () => {
+    console.log('Schedule changed');
+    showScheduleDialog.value = !showScheduleDialog.value;
+  }
+  
   // Save therapist details
   function saveTherapistDetails() {
     console.log('Saving therapist details...', therapistDetails.value);
+    isEditing.value = false;
+  }
+
+  const cancelEditing = () => {
     isEditing.value = false;
   }
   
@@ -303,6 +338,10 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+      }
+      .handle-edit-save{
+        display: flex;
+        flex-direction: column;
       }
   }
   </style>
