@@ -66,6 +66,14 @@ const routes = [
   {
     path : '/manager-dashboard',
     component: () => import('pages/ManagerDashboard.vue'),
+  },
+  {
+    path : '/manage-store',
+    component: () => import('pages/ManageStore.vue'),
+  },
+  {
+    path : '/manage-staff',
+    component: () => import('pages/ManageStaff.vue'),
   }
 
 

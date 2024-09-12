@@ -19,6 +19,7 @@
                   dense
                   class="input-field"
                   :rules="[val => !!val || 'Name is required']"
+                  hide-bottom-space
                 />
 
                 <q-input
@@ -27,7 +28,6 @@
                   label="Email(Optional)"
                   dense
                   type="email"
-                  class="q-my-sm email-margin"
                 />
                 <q-input
                   filled
@@ -35,8 +35,8 @@
                   label="Phone Number"
                   dense
                   mask="(###) ###-####"
-                  class="q-my-sm"
                   :rules="[val => !!val || 'Phone number is required']"
+                  hide-bottom-space
                 />
 
                 <q-select
@@ -48,6 +48,7 @@
                   option-value="name"
                   class="input-field"
                   :rules="[val => !!val || 'Therapist is required']"  
+                  hide-bottom-space
                   @input="fetchTherapistSchedule"
                 />
 
@@ -59,6 +60,7 @@
                   filled
                   class="input-field"
                   @click="showTimeDialog = true"
+                  hide-bottom-space
                   :rules="[val => !!val || 'Date is required']"
                 />
 
@@ -379,9 +381,6 @@ const handleSubmit = () => {
 .gb-appointment{
   margin: unset !important;
   margin-bottom: 10px !important;
-}
-.email-margin{
-  margin-bottom: 35px !important;
 }
 .event-card{
   min-width: 250px !important;

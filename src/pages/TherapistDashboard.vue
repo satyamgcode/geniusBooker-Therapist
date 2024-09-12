@@ -40,7 +40,7 @@
                     label="Store Name"
                     dense
                     filled
-                    :disable="!isEditing"
+                    disable
                   />
                 </div>
                 <div class="col-12 col-md-6">
@@ -68,7 +68,7 @@
                     label="Role"
                     dense
                     filled
-                    :disable="!isEditing"
+                    disable
                   />
                 </div>
                 <div class="col-12 col-md-6">
