@@ -27,7 +27,7 @@
           </q-card-section>
           <q-separator />
           <q-card-section v-for="(staffMember, index) in formattedSchedules" :key="index">
-            <div><strong>Name:</strong> {{ staffMember.name }}</div>
+            <div><strong>Name:</strong> {{ staffMember.username }}</div>
             <div><strong>Phone:</strong> {{ staffMember.phone }}</div>
             <div><strong>Email:</strong> {{ staffMember.email }}</div>
             <div><strong>Role:</strong> {{ staffMember.role }}</div>

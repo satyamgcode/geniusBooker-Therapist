@@ -18,7 +18,7 @@
                 filled
                 v-model="staffMember.phone"
                 label="Phone Number"
-                mask="(###) #####-#####"
+                mask="(###) ###-####"
                 dense
                 class="q-mb-sm"
                 hide-bottom-space
@@ -167,9 +167,15 @@ import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { useManagerStore } from 'src/stores/useManagerStore';
+import { useAuthStore } from 'src/stores/AuthStore';
+import { useOwnerStore } from 'src/stores/ownerStoresStore';
 import { format } from 'date-fns';
 
 const emit = defineEmits(['update-staff']);
+const managerStore = useManagerStore();
+const authStore = useAuthStore();
+const ownerStore = useOwnerStore();
 
 const fullCalendar = ref(null);
 
@@ -260,7 +266,7 @@ const calendarOptions = ref({
   headerToolbar: {
     start: '',
     center: 'title',
-    end: 'timeGridWeek,timeGridDay prev,next',
+    end: 'timeGridWeek,timeGridDay,dayGridMonth prev,next',
   },
   height: '70vh',
   editable: true,
@@ -310,6 +316,7 @@ const saveEvent = () => {
       borderColor: eventForm.value.color,
       editable: true,
     };
+    console.log(newEvent);
 
     fullCalendar.value.getApi().addEvent(newEvent);
 
@@ -349,8 +356,34 @@ const resetStaffDetails = () => {
 }
 
 const submitForm = async () => {
+  if(managerStore.manager?.manager_id){
   try {
-    const response = await axios.post('http://localhost:3000/staff', staff.value[selectedStaffIndex.value]);
+    const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/stores/${managerStore.managerStores[0].store_id}/staff/add/`, 
+    {
+      staff: staff.value.map(staffMember => {
+        const staffData = {
+          phone: staffMember.phone,
+          password: staffMember.password,
+          staff_role: staffMember.role,
+          staff_name: staffMember.username,
+        };
+        
+        // Only add email to staffData if it exists and is not empty
+        if (staffMember.email && staffMember.email.trim() !== '') {
+          staffData.email = staffMember.email;
+        }
+        
+        return staffData;
+      }
+      )
+    } , 
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authStore.authToken}`
+        }
+      }
+    );
     console.log(response.data);
   } catch (error) {
     console.error(error);
@@ -358,6 +391,42 @@ const submitForm = async () => {
     alert('Staff added successfully!');
     emitStaffData();
     resetStaffDetails();
+  }}else{
+    try {
+    const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/stores/${ownerStore.stores[0].store_id}/staff/add/`, 
+    {
+      staff: staff.value.map(staffMember => {
+        const staffData = {
+          phone: staffMember.phone,
+          password: staffMember.password,
+          staff_role: staffMember.role,
+          staff_name: staffMember.username,
+        };
+        
+        // Only add email to staffData if it exists and is not empty
+        if (staffMember.email && staffMember.email.trim() !== '') {
+          staffData.email = staffMember.email;
+        }
+        
+        return staffData;
+      }
+      )
+    } , 
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authStore.authToken}`
+        }
+      }
+    );
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    alert('Staff added successfully!');
+    emitStaffData();
+    resetStaffDetails();
+  }
   }
 };
 

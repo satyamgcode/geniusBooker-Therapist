@@ -48,15 +48,52 @@
   import { ref } from 'vue';
   import AppHeader from 'src/components/common/AppHeader.vue';
   import { useRouter } from 'vue-router';
+  import { useAuthStore } from 'src/stores/AuthStore';
+  import axios from 'axios';
+  import { useTherapistStore } from 'src/stores/useStaffStore';
+import { store } from 'quasar/wrappers';
+
+  const authStore = useAuthStore();
+
+  const staffStore  = useTherapistStore();
+
 
   const router = useRouter();
   
   const phone = ref('');
   const password = ref('');
+
+  const handleLogin = async () => {
+  try{
+    console.log("inside try login")
+    const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/login/therapist/`, {
+      phone: phone.value,
+      password: password.value
+    },
+    {
+      headers: {
+      'Content-Type': 'application/json',
+    }
+    });
+    console.log(response.data);
+    authStore.setToken(response.data.access);
+    const {therapist , stores } = response.data;
+    staffStore.setTherapist(therapist);
+    console.log("therapist",therapist , stores)
+    staffStore.setTherapistStores(stores);
+    if(stores.length > 0){
+      router.push('/therapist-dashboard');
+    }
+    // router.push('/therapist-dashboard');
+  } catch (error) {
+    console.error('Error during login:', error);
+    router.push('/therapist-dashboard');
+  }
+}
   
   const submitForm = () => {
     console.log('submitted', phone.value, password.value);
-    router.push('/therapist-dashboard');
+    handleLogin();
 
   };
   </script>

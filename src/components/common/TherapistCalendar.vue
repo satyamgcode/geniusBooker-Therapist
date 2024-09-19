@@ -77,7 +77,7 @@ const calendarOptions = ref({
   headerToolbar: {
     start: '',
     center: 'title',
-    end: 'timeGridWeek,timeGridDay prev,next',
+    end: 'timeGridWeek,timeGridDay,dayGridMonth prev,next',
   },
   height: '70vh',
   editable: true,

@@ -23,7 +23,16 @@
                   flat
                   @click="isEditing = true"
                 />
-                <q-btn
+                <div class="handle-edit-save">
+                  <q-btn
+                v-if="isEditing"
+                color="negative"
+                icon="cancel"
+                label="Cancel"
+                flat
+                @click="cancelEditing"
+              />
+              <q-btn
                   v-if="isEditing"
                   color="positive"
                   icon="save"
@@ -31,6 +40,7 @@
                   flat
                   @click="saveManagerDetails"
                 />
+                </div>
               </div>
             </q-card-section>
             <q-separator />
@@ -39,7 +49,7 @@
 
                 <div class="col-12 col-md-6">
                   <q-input
-                    v-model="managerDetails.storeName"
+                    v-model="managerDetails.store_name"
                     label="Store Name"
                     dense
                     filled
@@ -50,7 +60,7 @@
                 <div class="col-12 col-md-6">
 
                   <q-input
-                    v-model="managerDetails.name"
+                    v-model="managerDetails.managerDetails.name"
                     label="Manager Name"
                     dense
                     filled
@@ -59,7 +69,7 @@
                 </div>
                 <div class="col-12 col-md-6">
                   <q-input
-                    v-model="managerDetails.department"
+                    v-model="managerDetails.managerDetails.role"
                     label="Department"
                     dense
                     filled
@@ -68,11 +78,29 @@
                 </div>
                 <div class="col-12 col-md-6">
                   <q-input
-                    v-model="managerDetails.experience"
+                    v-model="managerDetails.managerDetails.exp"
                     label="Experience (years)"
                     dense
                     filled
                     type="number"
+                    :disable="!isEditing"
+                  />
+                </div>
+                <div v-if="isEditing" class="col-12 col-md-6">
+                  <q-input
+                    v-model="managerDetails.managerDetails.email"
+                    label="Email"
+                    dense
+                    filled
+                    :disable="!isEditing"
+                  />
+                </div>
+                <div v-if="isEditing" class="col-12 col-md-6">
+                  <q-input
+                    v-model="managerDetails.managerDetails.phone"
+                    label="Phone"
+                    dense
+                    filled
                     :disable="!isEditing"
                   />
                 </div>
@@ -150,13 +178,15 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { computed, onBeforeMount, ref, watch } from 'vue';
 import AppHeader from 'src/components/common/AppHeader.vue';
 import BookingCards from 'src/components/cardsection/BookingCards.vue';
 import TherapistCalendar from 'src/components/common/TherapistCalendar.vue';
+import { useManagerStore } from 'src/stores/useManagerStore';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const managerStore = useManagerStore();
 
 const showScheduleDialog = ref(false);
 
@@ -165,20 +195,26 @@ const handleScheduleChange = () => {
   showScheduleDialog.value = !showScheduleDialog.value;
 }
 
-const managerDetails = ref({
-  storeName: 'Therapist Wellness Center',
-  name: 'Manager John Doe',
-  department: 'Therapy Management',
-  experience: 15,
-  description: 'Experienced manager overseeing therapy operations for over 15 years.',
-});
+const cancelEditing = () => {
+    isEditing.value = false;
+  }
+
+const managerDetails = ref({});
 
 const isEditing = ref(false);
 
-const therapists = ref([
-  { id: 1, name: 'Dr. Jane Doe' },
-  { id: 2, name: 'Dr. Alice Johnson' },
-]);
+const therapists = computed(() => {
+  console.log(managerDetails.value)
+  const data = managerDetails.value?.therapists;
+  if (data) {
+    return data.map(therapist => ({
+      id: therapist.therapist_id,
+      name: therapist.therapist_name,
+    }))
+  }
+
+  return []
+})
 
 const selectedTherapist = ref(null);
 
@@ -200,6 +236,11 @@ function manageStore() {
   console.log('Navigating to Store Management...');
   router.push('./manage-store');
 }
+onBeforeMount(() => {
+  managerDetails.value = {managerDetails:{...managerStore.manager} , ...managerStore.managerStores[0]};
+  console.log('managerDetails',managerDetails.value);
+});
+
 </script>
 
 <style scoped>
@@ -278,5 +319,11 @@ function manageStore() {
 
 .full-width {
   width: 100%;
+}
+@media (max-width: 600px) {
+  .handle-edit-save{
+        display: flex;
+        flex-direction: column;
+      }
 }
 </style>

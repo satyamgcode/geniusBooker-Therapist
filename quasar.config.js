@@ -13,6 +13,7 @@ const { configure } = require('quasar/wrappers');
 
 
 module.exports = configure(function (ctx ) {
+  require('dotenv').config()
   return {
     framework: {
       config: {},
@@ -60,7 +61,7 @@ module.exports = configure(function (ctx ) {
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       env: {
-        VUE_APP_API_URL: JSON.stringify(process.env.VUE_APP_API_URL),
+        VUE_APP_API_URL: process.env.VUE_APP_API_URL,
       },
       // vueRouterBase,
       // vueDevtools,

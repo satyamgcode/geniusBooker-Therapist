@@ -9,7 +9,7 @@ const routes = [
   },
   {
     path: '/user/signup',
-    component: () => import('pages/customerSignup.vue'),
+    component: () => import('src/pages/OwnerLogin.vue'),
   },
   {
     path: '/owner/signup',
@@ -74,6 +74,14 @@ const routes = [
   {
     path : '/manage-staff',
     component: () => import('pages/ManageStaff.vue'),
+  },
+  {
+    path : '/store/:id',
+    component: () => import('pages/StoreDetails.vue'),
+  },
+  {
+    path : '/owner-login',
+    component: () => import('pages/OwnerLogin.vue'),
   }
 
 

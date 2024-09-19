@@ -161,7 +161,7 @@ const store = ref({
   name: '',
   address: '',
   phone: '',
-  email: '',
+  email: null,
   openingDays: [],
   startTime: '',
   endTime: '',

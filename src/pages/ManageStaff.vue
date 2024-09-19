@@ -4,7 +4,7 @@
       <q-page-container>
         <div class="gb-addremove-staff">
             <!-- Staff Members Section -->
-        <q-card-section>
+        <q-card-section class="staff-section">
           <div class="handle-back">
             <q-btn
               flat
@@ -17,7 +17,7 @@
           </div>
           <div class="row q-col-gutter-sm">
             <div
-              v-for="(staff, index) in staff"
+              v-for="(staff, index) in StaffManagement"
               :key="staff.id"
               class="col-12 col-sm-6 col-md-4"
             >
@@ -27,10 +27,10 @@
                     <img :src="staff.image ? staff.image : 'https://via.placeholder.com/80'" alt="Staff Photo" />
                   </q-avatar>
                   <div class="text-subtitle1 text-weight-bold q-mt-sm">
-                    {{ staff.username }}
+                    {{ staff.therapist_name || staff.first_name || 'staff name' }}
                   </div>
-                  <div class="text-caption text-grey-7 q-mt-xs">{{ staff.role }}</div>
-                  <div class="text-body2 q-mt-xs">{{ staff.experience }}</div>
+                  <div class="text-caption text-grey-7 q-mt-xs">{{ staff.role || 'job profile' }}</div>
+                  <div class="text-body2 q-mt-xs">{{ staff.therapist_exp || staff.exp ||'experience' }}</div>
                   <q-toggle
                     :model-value="staff.active"
                     checked-icon="check"
@@ -77,10 +77,15 @@
   
 
   <script setup>
-  import { ref } from 'vue';
+  import { onBeforeMount, ref } from 'vue';
   import { useRouter } from 'vue-router';
   import AddRemoveStaff from 'src/components/common/AddRemoveStaff.vue';
   import AppHeader from 'src/components/common/AppHeader.vue';
+  import { useManagerStore } from 'src/stores/useManagerStore';
+  import { useOwnerStore } from 'src/stores/ownerStoresStore';
+
+  const managerStore = useManagerStore();
+  const ownerStore = useOwnerStore();
   const confirm = ref(false);
   const selectedStaff = ref({});
   
@@ -136,6 +141,17 @@
     }
   ]);
 
+  const StaffManagement = ref([
+    {
+      id: 1,
+      username: 'John Doe',
+      role: 'Manager',
+      experience: '10 years',
+      image: 'https://cdn.quasar.dev/img/avatar2.jpg',
+      active: true
+    }
+  ]);
+
   const goBack = () => {
     router.back();
   };
@@ -155,7 +171,17 @@
       selectedStaff.value.active = !selectedStaff.value.active;
     }
   };
-  </script>
+  onBeforeMount(() => {
+    if(managerStore.manager?.manager_id){
+      StaffManagement.value = {...managerStore.managerStores[0]?.therapists} ;
+      console.log(StaffManagement.value);
+    }else{
+      StaffManagement.value = {...ownerStore.stores[0]?.therapists}
+      console.log(StaffManagement.value);
+    }
+  });
+
+</script>
   
 
 <style scoped>
@@ -170,6 +196,9 @@
 }
 .gb-addremove-staff{
     display: flex;
+}
+.staff-section{
+  min-width: 50%;
 }
 @media (max-width: 800px) {
   .gb-addremove-staff{

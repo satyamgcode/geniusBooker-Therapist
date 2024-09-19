@@ -19,23 +19,6 @@
                 <q-card-section>
                   <q-form @submit.prevent="submitForm">
                     <q-input
-                    filled
-                    v-model="storeName"
-                    label="Store Name"
-                    dense
-                    class="q-my-sm"
-                    :rules="[val => !!val || 'Store Name is required']"
-                    />
-                    <q-input
-                      filled
-                      v-model="email"
-                      label="Email"
-                      dense
-                      type="email"
-                      class="q-my-sm"
-                      :rules="[val => !!val || 'Valid email is required']"
-                    />
-                    <q-input
                       filled
                       v-model="phone"
                       label="Phone Number"
@@ -67,20 +50,20 @@
                 <q-card-section>
                   <q-form @submit.prevent="submitForm">
                     <q-input
-                    filled
-                    v-model="storeName"
-                    label="Store Name"
-                    dense
-                    class="q-my-sm"
-                    :rules="[val => !!val || 'Store Name is required']"
-                    />
-                    <q-input
                       filled
-                      v-model="name"
-                      label="Name"
+                      v-model="first_name"
+                      label="first name"
                       dense
                       class="q-my-sm"
-                      :rules="[val => !!val || 'Name is required']"
+                      :rules="[val => !!val || 'first name is required']"
+                      hide-bottom-space
+                    />
+                    <q-input
+                    filled
+                    v-model="last_name"
+                    label="Last name"
+                    dense
+                    class="q-my-sm"
                     />
                     <q-input
                       filled
@@ -89,7 +72,6 @@
                       dense
                       type="email"
                       class="q-my-sm"
-                      :rules="[val => !!val || 'Valid email is required']"
                     />
                     <q-input
                       filled
@@ -99,6 +81,7 @@
                       mask="(###) ###-####"
                       class="q-my-sm"
                       :rules="[val => !!val || 'Phone number is required']"
+                      hide-bottom-space
                     />
                     <q-input
                       filled
@@ -127,6 +110,7 @@
   
   <script setup>
   import { useAuthStore } from 'src/stores/AuthStore';
+  import { useOwnerStore } from 'src/stores/ownerStoresStore';
   import { ref } from 'vue';
   import HomeHeader from '../components/common/HomeHeader.vue'
   import { useRouter } from 'vue-router'
@@ -134,39 +118,42 @@
   
   const router = useRouter()
   const authStore = useAuthStore()
+  const ownerStore = useOwnerStore()
   
   const selectedTab = ref('signup');
-  const name = ref('');
-  const email = ref('');
+  const first_name = ref('');
+  const email = ref(null);
   const password = ref('');
   const phone  = ref('');
-  const storeName = ref('');
+  const last_name = ref('');
 
   const handleSignup = async () => {
-  try {
-    const response = await axios.post('http://127.0.0.1:8000/api/register/', {
-      username: name.value,
-      email: email.value,
-      phone: phone.value,
-      password: password.value,
-      store_name: storeName.value
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    console.log(response.data);
-    selectedTab.value = 'signin';
-  } catch (error) {
-    console.error('Error during signup:', error);
-  } finally{
-    selectedTab.value = 'signin';
-  }
+    try {
+  const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/register/`, {
+    first_name: first_name.value,
+    email: email.value,
+    phone: phone.value,
+    password: password.value,
+    last_name: last_name.value
+  }, {
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+  console.log(response.data);
+  selectedTab.value = 'signin';
+} catch (error) {
+  console.error('Error during signup:', error);
+} finally {
+  selectedTab.value = 'signin';
 }
+
+};
+
 
 const handleLogin = async () => {
   try{
-    const response = await axios.post('http://127.0.0.1:8000/api/login/', {
+    const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/login/owner/`, {
       phone: phone.value,
       password: password.value
     },
@@ -176,11 +163,18 @@ const handleLogin = async () => {
     }
     });
     console.log(response.data);
-    authStore.setToken(response.data.token);
-    router.push('/createStore');
+    authStore.setToken(response.data.access);
+    const { owner, stores } = response.data;
+    ownerStore.setOwner(owner);
+    ownerStore.setStores(stores);
+    if (stores[0].store_id) {
+      console.log(`/store/${stores[0].store_id}`);
+      router.push(`/store/${stores[0].store_id}`);
+    }else{
+      router.push('/createStore');
+    }
   } catch (error) {
     console.error('Error during login:', error);
-  } finally{
     router.push('/createStore');
   }
 }

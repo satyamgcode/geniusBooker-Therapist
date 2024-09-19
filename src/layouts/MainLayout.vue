@@ -19,12 +19,20 @@
             </div>
           </div>
         </div>
-        <q-btn
+        <div class="store-btn-container">
+          <q-btn
           class="store-btn q-mt-xl"
           color="primary"
           label="Create Store"
           @click="navigateToStoreLogin"
         />
+        <q-btn
+        class="store-btn q-mt-xl"
+        color="positive"
+        label="Manage Store"
+        @click="navigateToStoreOwnerLogin"
+        />
+        </div>
         <span
         class="text-body1 text-lg text-center q-mb-lg q-mt-md q-pa-sm text-primary bg-grey-4"
         style="border-radius: 20px;"
@@ -198,6 +206,7 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import HomeHeader from '../components/common/HomeHeader.vue'
 import FeedbackSection from 'src/components/FeedbackSection.vue';
 import AppFooter from 'src/components/common/AppFooter.vue';
@@ -212,11 +221,15 @@ const missionStatement = `
 `
 
 const handleBooking = () => {
+  console.log("Booking clicked");
   router.push('/therapyStores')
 }
 
 const navigateToStoreLogin = () => {
   router.push('/owner/signup')
+}
+const navigateToStoreOwnerLogin = () => {
+  router.push('/owner-login')
 }
 const navigateToTherapistLogin = () => {
   router.push('/therapist-login')
@@ -257,7 +270,12 @@ const navigateToManagerLogin = () => {
 .feature-description {
   color: #555;
 }
-
+.store-btn-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
 .hover-card:hover {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
@@ -422,10 +440,6 @@ const navigateToManagerLogin = () => {
   border-radius: 12px;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-}
-.q-page-container{
-  /* padding-top: unset !important; */
-  /* padding-bottom: unset !important; */
 }
 
 .services-card:hover {

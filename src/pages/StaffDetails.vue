@@ -8,7 +8,16 @@
           <q-card class="q-mb-md shadow-2">
             <q-card-section>
               <div class="text-h6 text-primary flex justify-between">
+                <div class="handle-back">
+                  <q-btn
+                  flat
+                  dense
+                  class="handle-left-arrow"
+                  icon="arrow_back"
+                  @click="goBack"
+                />
                 <span>Staff Details</span>
+                </div>
                 <q-icon name="person_add" size="30px" class="addstaff" color="primary" @click="addStaff" />
               </div>
             </q-card-section>
@@ -19,7 +28,7 @@
                 filled
                 v-model="staffMember.phone"
                 label="Phone Number"
-                mask="(###) #####-#####"
+                mask="(###) ###-####"
                 dense
                 class="q-mb-sm"
               />
@@ -189,7 +198,7 @@ const staff = ref([
   {
     username: '',
     phone: '',
-    email: '',
+    email: null,
     active: true,
     role: '',
     password: '',
@@ -264,7 +273,7 @@ const calendarOptions = ref({
   headerToolbar: {
     start: '',
     center: 'title',
-    end: 'timeGridWeek,timeGridDay prev,next',
+    end: 'timeGridWeek,timeGridDay,dayGridMonth prev,next',
   },
   height: '70vh',
   editable: true,
@@ -297,58 +306,61 @@ const onDialogShow = async () => {
   }
 };
 
-const handleSubmitFromCreateStore = async () => {
+const handleSubmit = async () => {
+  console.log('Form Submitted:', staff.value);
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/stores/', {
+    console.log('inside console');
+
+    // Create the store object
+    const storeData = {
       name: store.value.name,
       address: store.value.address,
       phone: store.value.phone,
-      email: store.value.email,
       opening_days: store.value.openingDays,
       start_time: store.value.startTime,
       end_time: store.value.endTime,
       lunch_start_time: store.value.lunchStartTime,
       lunch_end_time: store.value.lunchEndTime,
-      subscribe: store.value.subscribe,
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${authStore.authToken}`,
-      },
-    });
+      subscribe: store.value.subscribe
+    };
 
-    console.log(response.data);
-  } catch (error) {
-    console.error('Error saving store data:', error);
-  } finally {
-    console.log('store created');
-  }
-};
+    // Only add email to storeData if it exists and is not empty
+    if (store.value.email && store.value.email.trim() !== '') {
+      storeData.email = store.value.email;
+    }
 
-const handleSubmit = async () => {
-  try {
-    const response = await axios.post('http://127.0.0.1:8000/api/staff/', {
-      staff: staff.value,
-      stores: store.value.name,
+    const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/stores/create/`, {
+      store: storeData,
+      staff: staff.value.map(staffMember => {
+        const staffData = {
+          phone: staffMember.phone,
+          password: staffMember.password,
+          role: staffMember.role,
+          first_name: staffMember.username,
+        };
+        
+        // Only add email to staffData if it exists and is not empty
+        if (staffMember.email && staffMember.email.trim() !== '') {
+          staffData.email = staffMember.email;
+        }
+        
+        return staffData;
+      })
     }, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Token ${authStore.authToken}`,
+        'Authorization': `Bearer ${authStore.authToken}`,
       },
     });
-
-    console.log('Staff data saved successfully', response.data);
+    console.log('Store and staff data saved successfully', response.data);
   } catch (error) {
-    console.error('Error saving staff data:', error);
+    console.error('Error saving store and staff data:', error);
   } finally {
-    console.log('staff created');
+    console.log('Submission complete');
   }
 };
 
-
 const submitForm = async () => {
-  await handleSubmitFromCreateStore();
   await handleSubmit();
   router.push({
     path: '/storeId',
@@ -357,8 +369,10 @@ const submitForm = async () => {
       staffData: JSON.stringify(staff.value),
     },
   });
-  console.log(staff.value);
+  console.log('Form Submitted:', staff.value);
 };
+
+
 
 const showScheduleDialog = (index) => {
   if (staff.value[index].schedule === 'Customize Schedule') {
@@ -398,6 +412,10 @@ const saveEvent = () => {
 <style scoped>
 .q-card {
   border: 1px solid #1e88e5;
+}
+.handle-back{
+  cursor: pointer;
+  display: flex;
 }
 .q-page-container {
   max-width: 720px;

@@ -25,9 +25,9 @@
 
           <div class="therapists-container row wrap justify-center q-px-lg q-py-md">
             <TherapistCard
-              v-for="(therapist, index) in therapists"
+              v-for="(store, index) in therapists"
               :key="index"
-              :therapist="therapist"
+              :therapist="store"
             />
           </div>
         </div>
@@ -37,13 +37,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import AppHeader from 'src/components/common/AppHeader.vue';
 import TherapistCard from 'src/components/cardsection/TherapistCards.vue';
+import axios from 'axios';
 
-const therapists = ref([
+const therapists = ref([]);
+
+const dummyTherapists = [
   { 
-    id: 1,
+    id: 1000,
     storeName: 'Malvika Therapy Store',
     qualification: 'MA in Clinical Psychology',
     specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
@@ -51,12 +54,12 @@ const therapists = ref([
     image: 'https://via.placeholder.com/80',
     staff: [
       { id: 1, name: 'Dr. Anjali Sharma', role: 'Senior Psychologist', experience: '10 years' },
-      { id: 2, name: 'Dr. Vikram Mehta', role: 'Child Psychologist', experience: '7 years' },
+      { id: 2, name: 'Dr. Vikram Mehta', role: 'Child Psychologist', experience: '7 years' }, 
       { id: 3, name: 'Ms. Nidhi Patel', role: 'Therapy Assistant', experience: '3 years' }
     ]
   },
   {
-    id: 2,
+    id: 2000,
     storeName: 'Ayesha Bukhari Therapy Store',
     qualification: 'MA in Clinical Psychology',
     specialization: 'Depression, Trauma, Body Image, ADHD, Stress, Anger, Anxiety',
@@ -69,7 +72,7 @@ const therapists = ref([
     ]
   },
   {
-    id: 3,
+    id: 3000,
     storeName: 'Rashi Lambe Therapy Store',
     qualification: 'MSc. in Counseling Psychology',
     specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
@@ -82,7 +85,7 @@ const therapists = ref([
     ]
   },
   {
-    id: 4,
+    id: 4000,
     storeName: 'Malvika Agarwal Therapy Store',
     qualification: 'MA in Clinical Counseling',
     specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
@@ -95,7 +98,7 @@ const therapists = ref([
     ]
   },
   {
-    id: 5,
+    id: 5000,
     storeName: 'Rashi Lambe Therapy Store',
     qualification: 'MSc. in Counseling Psychology',
     specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
@@ -108,7 +111,7 @@ const therapists = ref([
     ]
   },
   {
-    id: 6,
+    id: 6000,
     storeName: 'Malvika Agarwal Therapy Store',
     qualification: 'MA in Clinical Counseling',
     specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
@@ -120,8 +123,46 @@ const therapists = ref([
       { id: 3, name: 'Mr. Rajiv Kumar', role: 'Life Coach', experience: '7 years' }
     ]
   }
-]);
+];
+
+const fetchStores = async () => {
+  try {
+    const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/stores/`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const apiTherapists = response.data.map(store => ({
+      id: store.id,
+      storeName: store.name,
+      qualification: '', // Placeholder if qualification data is not available in API
+      specialization: '', // Placeholder if specialization data is not available in API
+      availableAt: '', // Placeholder if availableAt data is not available in API
+      image: 'https://via.placeholder.com/80', // Placeholder image
+      staff: store.therapists.map(therapist => ({
+        id: therapist.first_name, // Adjust as per the actual data structure
+        name: `${therapist.first_name} ${therapist.last_name || ''}`.trim(),
+        role: therapist.specialty || 'Therapist', // Default role if specialty not available
+        experience: therapist.experience ? `${therapist.experience} years` : 'Experience not available'
+      }))
+    }));
+
+    // Combine API data and dummy data
+    therapists.value = [...dummyTherapists, ...apiTherapists];
+  } catch (error) {
+    console.error("Error fetching stores:", error);
+    therapists.value = dummyTherapists;
+    throw error;
+  }
+};
+
+onMounted(async () => {
+  await fetchStores();
+});
 </script>
+
+
 
 <style scoped>
 .bg-cover-container {

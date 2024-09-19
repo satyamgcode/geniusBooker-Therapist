@@ -46,7 +46,7 @@
               <div class="row q-col-gutter-md">
                 <div class="col-12 col-md-6">
                   <q-input
-                    v-model="therapistDetails.storeName"
+                    v-model="therapistDetails.store_name"
                     label="Store Name"
                     dense
                     filled
@@ -55,7 +55,7 @@
                 </div>
                 <div class="col-12 col-md-6">
                   <q-input
-                    v-model="therapistDetails.name"
+                    v-model="therapistDetails.staff.name"
                     label="Therapist Name"
                     dense
                     filled
@@ -64,7 +64,7 @@
                 </div>
                 <div class="col-12 col-md-6">
                   <q-input
-                    v-model="therapistDetails.experience"
+                    v-model="therapistDetails.staff.exp"
                     label="Experience (years)"
                     dense
                     filled
@@ -74,7 +74,7 @@
                 </div>
                 <div class="col-12 col-md-6">
                   <q-input
-                    v-model="therapistDetails.role"
+                    v-model="therapistDetails.staff.role"
                     label="Role"
                     dense
                     filled
@@ -83,8 +83,26 @@
                 </div>
                 <div class="col-12 col-md-6">
                   <q-input
-                    v-model="therapistDetails.speciality"
+                    v-model="therapistDetails.staff.specialty"
                     label="Speciality"
+                    dense
+                    filled
+                    :disable="!isEditing"
+                  />
+                </div>
+                <div v-if="isEditing" class="col-12 col-md-6">
+                  <q-input
+                    v-model="therapistDetails.staff.email"
+                    label="Email"
+                    dense
+                    filled
+                    :disable="!isEditing"
+                  />
+                </div>
+                <div v-if="isEditing" class="col-12 col-md-6">
+                  <q-input
+                    v-model="therapistDetails.staff.phone"
+                    label="Phone"
                     dense
                     filled
                     :disable="!isEditing"
@@ -223,18 +241,16 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import {  onBeforeMount, ref } from 'vue';
   import AppHeader from 'src/components/common/AppHeader.vue';
   import TherapistCalendar from 'src/components/common/TherapistCalendar.vue';
+  import { useTherapistStore } from 'src/stores/useStaffStore';
+
+  const StaffDetails = useTherapistStore();
   
-  const therapistDetails = ref({
-    storeName: 'Therapist Wellness Center',
-    name: 'Dr. Jane Doe',
-    experience: 10,
-    role: 'Therapist',
-    speciality: 'Cognitive Behavioral Therapy',
-    description: 'Experienced therapist specializing in CBT for over 10 years. Providing sessions for anxiety and stress management.',
-  });
+  const therapistDetails = ref({});
+
+  // therapistDetails.value = {...therapistDetails.value, ...JSON.parse(localStorage.getItem('therapistDetails'))};
   
   const isEditing = ref(false);
   
@@ -289,6 +305,13 @@
   function viewBooking(booking) {
     console.log('View booking:', booking);
   }
+
+  onBeforeMount(() => {
+    therapistDetails.value = { staff :{
+      ...StaffDetails.therapist
+    } , ...StaffDetails?.therapistStores[0]}
+    console.log("therapistDetails", therapistDetails.value)
+  })
   </script>
   
   <style scoped>
