@@ -11,7 +11,7 @@
                 <q-avatar size="100px" color="primary" icon="storefront" />
               </div>
               <div class="col-12 col-md">
-                <div class="text-h5 text-weight-bold">{{ store.name }}</div>
+                <div class="text-h5 text-weight-bold">{{ store.storeName }}</div>
                 <div class="text-subtitle2 text-grey-7 q-mt-xs">{{ store.address }}</div>
                 <div class="text-body2 q-mt-xs">Contact: {{ store.phone }}</div>
               </div>
@@ -35,7 +35,7 @@
                       <img :src="staff.image || 'https://via.placeholder.com/80'" alt="Staff Photo" />
                     </q-avatar>
                     <div class="text-subtitle1 text-weight-bold q-mt-sm">
-                      {{ staff.name || `${staff.first_name} ${staff.last_name || ''}` }}
+                      {{ staff.name || staff.username || 'staff name' }}
                     </div>
                     <div class="text-caption text-grey-7 q-mt-xs">{{ staff.role || staff.specialty || 'No Role' }}</div>
                     <div class="text-body2 q-mt-xs">{{ staff.experience || 'No Experience' }}</div>
@@ -59,19 +59,22 @@
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
-import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
+import { ref, onMounted, computed, onBeforeMount } from 'vue';
+// import axios from 'axios';
 import AppHeader from 'src/components/common/AppHeader.vue';
+import { useFetchAllStores } from 'src/stores/useFetchAllStores';
+
+const fetchAllStores = useFetchAllStores();
 
 const router = useRouter();
 const route = useRoute();
-const store = ref({}); // Store details
+// const store = ref({}); // Store details
 const apiStaff = ref([]); // API staff data
 
 // Dummy data for stores and staff
 const dummyStoreData = {
   1000: {
-    name: 'Malvika Therapy Store',
+    storeName: 'Malvika Therapy Store',
     address: '1234 Elm Street, City, Country',
     contact: '+123 456 7890',
     staff: [
@@ -132,42 +135,52 @@ const dummyStoreData = {
       }
     };
 
+const store = computed(() => {
+  return fetchAllStores.getStoreById(route.params.id) || {}
+})
+
 // Fetch store details and staff data from the API
-const fetchStoreDetails = async (id) => {
-  try {
-    const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/stores/`, {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
+// const fetchStoreDetails = async (id) => {
+//   try {
+//     const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/stores/`, {
+//       headers: {
+//         'Content-Type': 'application/json',
+//       }
+//     });
 
-    const apiStoreData = response.data.find(store => store.id === id);
+//     const apiStoreData = response.data.find(store => store.id === id);
 
-    if (apiStoreData) {
-      store.value = {
-        ...dummyStoreData[id], // Merge dummy store data
-        ...apiStoreData, // Merge API store data
-      };
-      apiStaff.value = apiStoreData.therapists || [];
-    } else {
-      store.value = dummyStoreData[id]; // Use dummy data if API store data isn't available
-    }
-  } catch (error) {
-    console.error('Error fetching store details:', error);
-    store.value = dummyStoreData[id]; // Use dummy data on error
-  }
-};
+//     if (apiStoreData) {
+//       store.value = {
+//         ...dummyStoreData[id], // Merge dummy store data
+//         ...apiStoreData, // Merge API store data
+//       };
+//       apiStaff.value = apiStoreData.therapists || [];
+//     } else {
+//       store.value = dummyStoreData[id]; // Use dummy data if API store data isn't available
+//     }
+//   } catch (error) {
+//     console.error('Error fetching store details:', error);
+//     store.value = dummyStoreData[id]; // Use dummy data on error
+//   }
+// };
 
 // Combine dummy staff data with API staff data
 const mergedStaff = computed(() => {
   const dummyStaff = dummyStoreData[route.params.id]?.staff || [];
-  return [...dummyStaff, ...apiStaff.value];
+  const apiStaff = store.value?.staff || [];
+
+  return [...dummyStaff, ...apiStaff];
 });
 
-// Call the API on component mount
-onMounted(() => {
-  fetchStoreDetails(parseInt(route.params.id));
-});
+fetchAllStores.fetchStores();
+
+
+// // Call the API on component mount
+// onMounted(() => {
+//   apiStaff.value = fetchAllStores.getStoreById(route.params.id);
+//   console.log(apiStaff.value)
+// });
 
 const viewProfile = (staffId) => {
   console.log(`Viewing profile for staff ID: ${staffId}`);

@@ -25,7 +25,7 @@
 
           <div class="therapists-container row wrap justify-center q-px-lg q-py-md">
             <TherapistCard
-              v-for="(store, index) in therapists"
+              v-for="(store, index) in fetchAllStores.stores"
               :key="index"
               :therapist="store"
             />
@@ -37,128 +37,131 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import AppHeader from 'src/components/common/AppHeader.vue';
 import TherapistCard from 'src/components/cardsection/TherapistCards.vue';
-import axios from 'axios';
+// import axios from 'axios';
+import { useFetchAllStores } from 'src/stores/useFetchAllStores';
+
+const fetchAllStores = useFetchAllStores();
 
 const therapists = ref([]);
 
-const dummyTherapists = [
-  { 
-    id: 1000,
-    storeName: 'Malvika Therapy Store',
-    qualification: 'MA in Clinical Psychology',
-    specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
-    availableAt: 'Aug 28, 2024 3:00 PM',
-    image: 'https://via.placeholder.com/80',
-    staff: [
-      { id: 1, name: 'Dr. Anjali Sharma', role: 'Senior Psychologist', experience: '10 years' },
-      { id: 2, name: 'Dr. Vikram Mehta', role: 'Child Psychologist', experience: '7 years' }, 
-      { id: 3, name: 'Ms. Nidhi Patel', role: 'Therapy Assistant', experience: '3 years' }
-    ]
-  },
-  {
-    id: 2000,
-    storeName: 'Ayesha Bukhari Therapy Store',
-    qualification: 'MA in Clinical Psychology',
-    specialization: 'Depression, Trauma, Body Image, ADHD, Stress, Anger, Anxiety',
-    availableAt: 'Aug 28, 2024 3:00 PM',
-    image: 'https://via.placeholder.com/80',
-    staff: [
-      { id: 1, name: 'Dr. Sameer Khan', role: 'Senior Therapist', experience: '12 years' },
-      { id: 2, name: 'Ms. Ritu Verma', role: 'Cognitive Therapist', experience: '5 years' },
-      { id: 3, name: 'Mr. Ajay Singh', role: 'Mental Health Counselor', experience: '4 years' }
-    ]
-  },
-  {
-    id: 3000,
-    storeName: 'Rashi Lambe Therapy Store',
-    qualification: 'MSc. in Counseling Psychology',
-    specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
-    availableAt: 'Aug 28, 2024 3:00 PM',
-    image: 'https://via.placeholder.com/80',
-    staff: [
-      { id: 1, name: 'Dr. Pooja Kulkarni', role: 'Psychotherapist', experience: '8 years' },
-      { id: 2, name: 'Mr. Arun Jain', role: 'Relationship Counselor', experience: '6 years' },
-      { id: 3, name: 'Ms. Preeti Desai', role: 'Wellness Coach', experience: '3 years' }
-    ]
-  },
-  {
-    id: 4000,
-    storeName: 'Malvika Agarwal Therapy Store',
-    qualification: 'MA in Clinical Counseling',
-    specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
-    availableAt: 'Aug 28, 2024 3:00 PM',
-    image: 'https://via.placeholder.com/80',
-    staff: [
-      { id: 1, name: 'Dr. Meera Gupta', role: 'Clinical Psychologist', experience: '15 years' },
-      { id: 2, name: 'Ms. Kavita Nair', role: 'Therapist', experience: '4 years' },
-      { id: 3, name: 'Mr. Karan Bose', role: 'Behavioral Therapist', experience: '5 years' }
-    ]
-  },
-  {
-    id: 5000,
-    storeName: 'Rashi Lambe Therapy Store',
-    qualification: 'MSc. in Counseling Psychology',
-    specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
-    availableAt: 'Aug 28, 2024 3:00 PM',
-    image: 'https://via.placeholder.com/80',
-    staff: [
-      { id: 1, name: 'Dr. Sneha Bhatt', role: 'Clinical Psychologist', experience: '9 years' },
-      { id: 2, name: 'Mr. Ravi Sinha', role: 'Family Therapist', experience: '5 years' },
-      { id: 3, name: 'Ms. Sunita Verma', role: 'Mental Health Specialist', experience: '6 years' }
-    ]
-  },
-  {
-    id: 6000,
-    storeName: 'Malvika Agarwal Therapy Store',
-    qualification: 'MA in Clinical Counseling',
-    specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
-    availableAt: 'Aug 28, 2024 3:00 PM',
-    image: 'https://via.placeholder.com/80',
-    staff: [
-      { id: 1, name: 'Dr. Aakash Verma', role: 'Psychiatrist', experience: '11 years' },
-      { id: 2, name: 'Ms. Anamika Gupta', role: 'Psychologist', experience: '4 years' },
-      { id: 3, name: 'Mr. Rajiv Kumar', role: 'Life Coach', experience: '7 years' }
-    ]
-  }
-];
+// const dummyTherapists = [
+//   { 
+//     id: 1000,
+//     storeName: 'Malvika Therapy Store',
+//     qualification: 'MA in Clinical Psychology',
+//     specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
+//     availableAt: 'Aug 28, 2024 3:00 PM',
+//     image: 'https://via.placeholder.com/80',
+//     staff: [
+//       { id: 1, name: 'Dr. Anjali Sharma', role: 'Senior Psychologist', experience: '10 years' },
+//       { id: 2, name: 'Dr. Vikram Mehta', role: 'Child Psychologist', experience: '7 years' }, 
+//       { id: 3, name: 'Ms. Nidhi Patel', role: 'Therapy Assistant', experience: '3 years' }
+//     ]
+//   },
+//   {
+//     id: 2000,
+//     storeName: 'Ayesha Bukhari Therapy Store',
+//     qualification: 'MA in Clinical Psychology',
+//     specialization: 'Depression, Trauma, Body Image, ADHD, Stress, Anger, Anxiety',
+//     availableAt: 'Aug 28, 2024 3:00 PM',
+//     image: 'https://via.placeholder.com/80',
+//     staff: [
+//       { id: 1, name: 'Dr. Sameer Khan', role: 'Senior Therapist', experience: '12 years' },
+//       { id: 2, name: 'Ms. Ritu Verma', role: 'Cognitive Therapist', experience: '5 years' },
+//       { id: 3, name: 'Mr. Ajay Singh', role: 'Mental Health Counselor', experience: '4 years' }
+//     ]
+//   },
+//   {
+//     id: 3000,
+//     storeName: 'Rashi Lambe Therapy Store',
+//     qualification: 'MSc. in Counseling Psychology',
+//     specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
+//     availableAt: 'Aug 28, 2024 3:00 PM',
+//     image: 'https://via.placeholder.com/80',
+//     staff: [
+//       { id: 1, name: 'Dr. Pooja Kulkarni', role: 'Psychotherapist', experience: '8 years' },
+//       { id: 2, name: 'Mr. Arun Jain', role: 'Relationship Counselor', experience: '6 years' },
+//       { id: 3, name: 'Ms. Preeti Desai', role: 'Wellness Coach', experience: '3 years' }
+//     ]
+//   },
+//   {
+//     id: 4000,
+//     storeName: 'Malvika Agarwal Therapy Store',
+//     qualification: 'MA in Clinical Counseling',
+//     specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
+//     availableAt: 'Aug 28, 2024 3:00 PM',
+//     image: 'https://via.placeholder.com/80',
+//     staff: [
+//       { id: 1, name: 'Dr. Meera Gupta', role: 'Clinical Psychologist', experience: '15 years' },
+//       { id: 2, name: 'Ms. Kavita Nair', role: 'Therapist', experience: '4 years' },
+//       { id: 3, name: 'Mr. Karan Bose', role: 'Behavioral Therapist', experience: '5 years' }
+//     ]
+//   },
+//   {
+//     id: 5000,
+//     storeName: 'Rashi Lambe Therapy Store',
+//     qualification: 'MSc. in Counseling Psychology',
+//     specialization: 'Stress, Anxiety, Depression, Career Counselling, Relationship Issues',
+//     availableAt: 'Aug 28, 2024 3:00 PM',
+//     image: 'https://via.placeholder.com/80',
+//     staff: [
+//       { id: 1, name: 'Dr. Sneha Bhatt', role: 'Clinical Psychologist', experience: '9 years' },
+//       { id: 2, name: 'Mr. Ravi Sinha', role: 'Family Therapist', experience: '5 years' },
+//       { id: 3, name: 'Ms. Sunita Verma', role: 'Mental Health Specialist', experience: '6 years' }
+//     ]
+//   },
+//   {
+//     id: 6000,
+//     storeName: 'Malvika Agarwal Therapy Store',
+//     qualification: 'MA in Clinical Counseling',
+//     specialization: 'Anxiety, Depression, Stress, Mood Disorder, Relationship Issues',
+//     availableAt: 'Aug 28, 2024 3:00 PM',
+//     image: 'https://via.placeholder.com/80',
+//     staff: [
+//       { id: 1, name: 'Dr. Aakash Verma', role: 'Psychiatrist', experience: '11 years' },
+//       { id: 2, name: 'Ms. Anamika Gupta', role: 'Psychologist', experience: '4 years' },
+//       { id: 3, name: 'Mr. Rajiv Kumar', role: 'Life Coach', experience: '7 years' }
+//     ]
+//   }
+// ];
 
-const fetchStores = async () => {
-  try {
-    const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/stores/`, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+// const fetchStores = async () => {
+//   try {
+//     const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/stores/`, {
+//       headers: {
+//         'Content-Type': 'application/json'
+//       }
+//     });
 
-    const apiTherapists = response.data.map(store => ({
-      id: store.id,
-      storeName: store.name,
-      qualification: '', // Placeholder if qualification data is not available in API
-      specialization: '', // Placeholder if specialization data is not available in API
-      availableAt: '', // Placeholder if availableAt data is not available in API
-      image: 'https://via.placeholder.com/80', // Placeholder image
-      staff: store.therapists.map(therapist => ({
-        id: therapist.first_name, // Adjust as per the actual data structure
-        name: `${therapist.first_name} ${therapist.last_name || ''}`.trim(),
-        role: therapist.specialty || 'Therapist', // Default role if specialty not available
-        experience: therapist.experience ? `${therapist.experience} years` : 'Experience not available'
-      }))
-    }));
+//     const apiTherapists = response.data.map(store => ({
+//       id: store.id,
+//       storeName: store.name,
+//       qualification: store.phone,
+//       specialization: store.speciality || 'Specialization not available',
+//       availableAt: 'Checkout schedule',
+//       image: 'https://via.placeholder.com/80',
+//       staff: store.therapists.map(therapist => ({
+//         name: therapist.username,
+//         role: therapist.role || 'Therapist',
+//         experience: therapist.experience ? `${therapist.experience} years` : 'Experience not available'
+//       }))
+//     }));
 
-    // Combine API data and dummy data
-    therapists.value = [...dummyTherapists, ...apiTherapists];
-  } catch (error) {
-    console.error("Error fetching stores:", error);
-    therapists.value = dummyTherapists;
-    throw error;
-  }
-};
+//     // Combine API data and dummy data
+//     therapists.value = [...dummyTherapists, ...apiTherapists];
+//   } catch (error) {
+//     console.error("Error fetching stores:", error);
+//     therapists.value = dummyTherapists;
+//     throw error;
+//   }
+// };
 
-onMounted(async () => {
-  await fetchStores();
+
+onBeforeMount(async () => {
+  await fetchAllStores.fetchStores()
 });
 </script>
 

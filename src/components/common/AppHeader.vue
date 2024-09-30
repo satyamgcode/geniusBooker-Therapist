@@ -17,10 +17,13 @@ import { useRouter } from 'vue-router';
 import { useOwnerStore } from 'src/stores/ownerStoresStore';
 import { useTherapistStore } from 'src/stores/useStaffStore';
 import { useManagerStore } from 'src/stores/useManagerStore';
+import { useAuthStore } from 'src/stores/AuthStore';
 
 const ownerStore = useOwnerStore();
 const StaffDetails = useTherapistStore();
 const ManagerDetails = useManagerStore();
+
+const authStore = useAuthStore();
 
 const props = defineProps({
   isShowHeader: {
@@ -38,6 +41,7 @@ const navigateToHome = () => {
   ownerStore.clearOwner();
   StaffDetails.clearTherapist();
   ManagerDetails.clearManager();
+  authStore.clearToken();
   router.push('/');
 };
 </script>

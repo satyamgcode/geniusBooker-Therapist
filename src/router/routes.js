@@ -82,6 +82,18 @@ const routes = [
   {
     path : '/owner-login',
     component: () => import('pages/OwnerLogin.vue'),
+  },
+  {
+    path : '/forgotPassword',
+    component: () => import('pages/ForgotPassword.vue'),
+  },
+  {
+    path : '/reset-password',
+    component: () => import('pages/UpdatePassword.vue'),
+  },
+  {
+    path : '/confirm-reschedule',
+    component: () => import('pages/RescheduleConfirmation.vue'),
   }
 
 

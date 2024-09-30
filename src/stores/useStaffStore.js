@@ -6,11 +6,23 @@ export const useTherapistStore = defineStore('therapistStore', () => {
     // Store therapist and associated stores in local storage
     const therapist = useLocalStorage("therapist", {})
     const therapistStores = useLocalStorage("therapistStores", [])
+    const therapistScheduleDetails = useLocalStorage("therapistScheduleDetails", [])
+    const therapistPendingBookings = useLocalStorage("therapistPendingBookings", [])
 
     // Function to set therapist data
     const setTherapist = (newTherapist) => {
         therapist.value = newTherapist
         console.log(therapist.value)
+    }
+
+    const setTherapistSchedule = ( schedule) => {
+        therapistScheduleDetails.value = schedule
+        console.log('schedule', therapistScheduleDetails.value)
+    } 
+
+    const setTherapistPendingBookings = ( bookings) => {
+        therapistPendingBookings.value = bookings
+        console.log('bookings', therapistPendingBookings.value)
     }
 
     // Function to set therapist's stores data
@@ -29,6 +41,7 @@ export const useTherapistStore = defineStore('therapistStore', () => {
     const clearTherapist = () => {
         therapist.value = null
         therapistStores.value = null
+        therapistScheduleDetails.value = null
     }
 
     return {
@@ -37,6 +50,10 @@ export const useTherapistStore = defineStore('therapistStore', () => {
         setTherapist,
         setTherapistStores,
         clearTherapist,
-        showTherapistStoreDetails
+        showTherapistStoreDetails,
+        therapistScheduleDetails,
+        setTherapistSchedule,
+        therapistPendingBookings,
+        setTherapistPendingBookings
     }
 })

@@ -27,7 +27,7 @@
                     <img :src="staff.image ? staff.image : 'https://via.placeholder.com/80'" alt="Staff Photo" />
                   </q-avatar>
                   <div class="text-subtitle1 text-weight-bold q-mt-sm">
-                    {{ staff.therapist_name || staff.first_name || 'staff name' }}
+                    {{ staff.therapist_name || staff.username|| 'staff name' }}
                   </div>
                   <div class="text-caption text-grey-7 q-mt-xs">{{ staff.role || 'job profile' }}</div>
                   <div class="text-body2 q-mt-xs">{{ staff.therapist_exp || staff.exp ||'experience' }}</div>

@@ -4,6 +4,10 @@
   }
   }
 
+  .fc .fc-toolbar.fc-header-toolbar {
+    flex-direction: column !important;
+}
+
  tbody tr{
   height: 40px;
  } 

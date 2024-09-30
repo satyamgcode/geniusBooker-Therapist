@@ -6,11 +6,13 @@ export  const useAuthStore = defineStore('authStore', () => {
 
     function setToken(newToken) {
         authToken.value = newToken;
+        localStorage.setItem('authToken', newToken);
         console.log(authToken.value)
     }
 
     function clearToken() {
         authToken.value = null;
+        localStorage.removeItem('authToken');
     }
 
     return {

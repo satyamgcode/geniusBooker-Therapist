@@ -15,8 +15,7 @@
                 v-model="phone"
                 label="Phone Number"
                 dense
-                mask="(###) ###-####"
-                :rules="[val => !!val || 'Phone number is required']"
+                :rules="phoneRules"
               />
               <q-input
                 dense
@@ -60,29 +59,37 @@ const router = useRouter();
 
 const phone = ref('');
 const password = ref('');
+const phoneRules = [
+  val => !!val || 'Phone number is required',
+  val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
+];
 
 const handleOwnerLogin = async () => {
   try {
     const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/login/owner/`, {
       phone: phone.value,
       password: password.value,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
     console.log(response.data);
     authStore.setToken(response.data.access);
     const { owner, stores } = response.data;
     ownerStore.setOwner(owner);
     ownerStore.setStores(stores);
-  if (stores.length > 0) {
+    if (stores[0]?.store_id) {
+      console.log(`/store/${stores[0].store_id}`);
       router.push(`/store/${stores[0].store_id}`);
+    } else {
+      router.push('/createStore');
     }
   } catch (error) {
-    console.log(error);
-    const randomId = Math.floor(Math.random() * 5+1);
-    router.push({
-    path: '/store/' + randomId,
-  });
+    console.error('Error during login:', error);
+    router.push('/createStore');
   }
-}
+};
 
 const submitForm = () => {
   console.log('submitted', phone.value, password.value);

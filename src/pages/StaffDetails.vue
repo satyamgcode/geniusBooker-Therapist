@@ -28,9 +28,9 @@
                 filled
                 v-model="staffMember.phone"
                 label="Phone Number"
-                mask="(###) ###-####"
                 dense
                 class="q-mb-sm"
+                :rules="phoneRules"
               />
               <q-input filled v-model="staffMember.email" label="Email" type="email" dense class="q-mb-sm" />
               <q-select filled v-model="staffMember.role" :options="roles" label="Role" dense class="q-mb-sm" />
@@ -184,6 +184,11 @@ const fullCalendar = ref(null);
 
 const store = ref(JSON.parse(route.query.storeData));
 
+const phoneRules = [
+  val => !!val || 'Phone number is required',
+  val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
+]
+
 const daysOfWeek = [
   { label: 'Monday', value: 'Monday' },
   { label: 'Tuesday', value: 'Tuesday' },
@@ -336,7 +341,7 @@ const handleSubmit = async () => {
           phone: staffMember.phone,
           password: staffMember.password,
           role: staffMember.role,
-          first_name: staffMember.username,
+          username: staffMember.username,
         };
         
         // Only add email to staffData if it exists and is not empty

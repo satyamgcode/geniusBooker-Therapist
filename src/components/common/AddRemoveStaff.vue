@@ -27,7 +27,7 @@
                   (val) => (val && val.length > 0) || 'Phone number is required',
                 ]"
               />
-              <q-input filled v-model="staffMember.email" label="Email" type="email" dense class="q-mb-sm" />
+              <q-input filled v-model="staffMember.email" label="Email" type="email" dense class="q-mb-sm" required rules="[(val) => (val && val.length > 0) || 'Email is required']" hide-bottom-space />
               <q-select filled v-model="staffMember.role" :options="roles" label="Role" dense class="q-mb-sm" :rules="[(val) => (val && val.length > 0) || 'Role is required']" hide-bottom-space />
               <q-input filled v-model="staffMember.password" label="Password" type="password" dense />
               <q-card class="q-my-md q-pa-md bg-grey-2">

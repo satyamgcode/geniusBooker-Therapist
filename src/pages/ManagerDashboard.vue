@@ -104,16 +104,6 @@
                     :disable="!isEditing"
                   />
                 </div>
-                <div class="col-12">
-                  <q-input
-                    v-model="managerDetails.description"
-                    label="Description"
-                    dense
-                    filled
-                    type="textarea"
-                    :disable="!isEditing"
-                  />
-                </div>
               </div>
             </q-card-section>
             <q-separator />
@@ -183,10 +173,13 @@ import AppHeader from 'src/components/common/AppHeader.vue';
 import BookingCards from 'src/components/cardsection/BookingCards.vue';
 import TherapistCalendar from 'src/components/common/TherapistCalendar.vue';
 import { useManagerStore } from 'src/stores/useManagerStore';
+import { useAuthStore } from 'src/stores/AuthStore';
+import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const managerStore = useManagerStore();
+const authStore = useAuthStore();
 
 const showScheduleDialog = ref(false);
 
@@ -200,6 +193,7 @@ const cancelEditing = () => {
   }
 
 const managerDetails = ref({});
+const managerProfile = ref({});
 
 const isEditing = ref(false);
 
@@ -222,8 +216,35 @@ watch(selectedTherapist, () => {
   console.log('Selected therapist:', selectedTherapist.value);
 });
 
+const handleUpdateManagerDetail = async (updatedData) => {
+  try {
+    const response = await axios.put(`${process.env.VUE_APP_API_URL}/api/manager/update-profile/`, updatedData ,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authStore.authToken}`
+        }
+
+      }
+     );
+    console.log('Therapist updated successfully:', response.data);
+  } catch (error) {
+    console.error('Error updating therapist details:', error);
+  }
+};
+
+
 function saveManagerDetails() {
-  console.log('Saving manager details...', managerDetails.value);
+  console.log('Saving manager details...', managerDetails.value.managerDetails);
+  managerProfile.value = {
+    
+    username: managerDetails.value.managerDetails.name,
+    email: managerDetails.value.managerDetails.email,
+    exp: managerDetails.value.managerDetails.exp,
+    
+  }
+  handleUpdateManagerDetail(managerProfile.value);
+  console.log('Updated manager details:', managerProfile.value);
   isEditing.value = false;
 }
 

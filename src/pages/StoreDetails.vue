@@ -54,7 +54,7 @@
                         <img :src="staff.image || 'https://via.placeholder.com/80'" alt="Staff Photo" />
                       </q-avatar>
                       <div class="text-subtitle1 text-weight-bold q-mt-sm">
-                        {{ staff.first_name }}
+                        {{ staff.username || 'staff name' }}
                       </div>
                       <div class="text-caption text-grey-7 q-mt-xs">{{ staff.role }}</div>
                       <div class="text-body2 q-mt-xs">{{ staff.speciality || 'No detail available' }}</div>
@@ -85,7 +85,7 @@
                         <img :src="staff.image || 'https://via.placeholder.com/80'" alt="Staff Photo" />
                       </q-avatar>
                       <div class="text-subtitle1 text-weight-bold q-mt-sm">
-                        {{ staff.first_name }}
+                        {{ staff.username || 'staff name' }}
                       </div>
                       <div class="text-caption text-grey-7 q-mt-xs">{{ staff.role }}</div>
                       <div class="text-body2 q-mt-xs">{{ staff.speciality || 'No detail available' }}</div>

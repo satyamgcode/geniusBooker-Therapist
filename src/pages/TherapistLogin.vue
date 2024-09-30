@@ -51,7 +51,6 @@
   import { useAuthStore } from 'src/stores/AuthStore';
   import axios from 'axios';
   import { useTherapistStore } from 'src/stores/useStaffStore';
-import { store } from 'quasar/wrappers';
 
   const authStore = useAuthStore();
 
