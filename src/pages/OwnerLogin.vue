@@ -75,7 +75,8 @@ const handleOwnerLogin = async () => {
       },
     });
     console.log(response.data);
-    authStore.setToken(response.data.access);
+    const authToken = localStorage.setItem('OwnerToken', response.data.access);
+    authStore.setToken(authToken);
     const { owner, stores } = response.data;
     ownerStore.setOwner(owner);
     ownerStore.setStores(stores);

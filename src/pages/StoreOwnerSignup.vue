@@ -19,7 +19,7 @@
                     label="Phone Number"
                     dense
                     class="q-my-sm"
-                    :rules="[val => !!val || 'Phone number is required']"
+                    :rules="phoneRules"
                     hide-bottom-space
                   />
                   <q-input

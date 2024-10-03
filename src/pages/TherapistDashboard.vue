@@ -45,7 +45,7 @@
                 <q-input v-model="therapistDetails.staff.email" label="Email" dense filled :disable="!isEditing" />
               </div>
               <div v-if="isEditing" class="col-12 col-md-6">
-                <q-input v-model="therapistDetails.staff.phone" label="Phone" dense filled :disable="!isEditing" />
+                <q-input v-model="therapistDetails.staff.phone" label="Phone" dense filled :disable="!isEditing" :rules="phoneRules" />
               </div>
               <div class="col-12">
                 <q-input v-model="therapistDetails.staff.description" label="Description" dense filled type="textarea"
@@ -170,6 +170,11 @@ const suggestionForm = ref({
 
 // therapistDetails.value = {...therapistDetails.value, ...JSON.parse(localStorage.getItem('therapistDetails'))};
 
+const phoneRules = [
+  val => !!val || 'Phone number is required',
+  val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
+];
+
 const isEditing = ref(false);
 
 const showScheduleDialog = ref(false);
@@ -270,6 +275,7 @@ function rescheduleBooking(booking) {
 }
 
 function cancelBooking(booking) {
+  UpdateBookingsStatus(booking.appointment_id, 'Cancelled');
   pendingBookings.value = pendingBookings.value.filter((b) => b !== booking);
   confirmedBookings.value = confirmedBookings.value.filter((b) => b !== booking);
 }
@@ -280,7 +286,8 @@ function viewBooking(booking) {
 
 const fetchTherapistSchedule = async () => {
   const authToken = localStorage.getItem('authToken');
-  const therapist_id = 2
+  const therapist_id = StaffDetails.therapist.therapist_id;
+  console.log('id' , therapist_id)
   try {
     const response = await axios.get(
       `${process.env.VUE_APP_API_URL}/api/therapists/${therapist_id}/schedule/`,

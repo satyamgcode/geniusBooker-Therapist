@@ -18,14 +18,11 @@
                 filled
                 v-model="staffMember.phone"
                 label="Phone Number"
-                mask="(###) ###-####"
                 dense
                 class="q-mb-sm"
                 hide-bottom-space
                 aria-required
-                :rules="[
-                  (val) => (val && val.length > 0) || 'Phone number is required',
-                ]"
+                :rules="phoneRules"
               />
               <q-input filled v-model="staffMember.email" label="Email" type="email" dense class="q-mb-sm" required rules="[(val) => (val && val.length > 0) || 'Email is required']" hide-bottom-space />
               <q-select filled v-model="staffMember.role" :options="roles" label="Role" dense class="q-mb-sm" :rules="[(val) => (val && val.length > 0) || 'Role is required']" hide-bottom-space />
@@ -178,6 +175,11 @@ const authStore = useAuthStore();
 const ownerStore = useOwnerStore();
 
 const fullCalendar = ref(null);
+
+const phoneRules = [
+  val => !!val || 'Phone number is required',
+  val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
+];
 
 const daysOfWeek = [
   { label: 'Monday', value: 'Monday' },
@@ -392,6 +394,8 @@ const submitForm = async () => {
     emitStaffData();
     resetStaffDetails();
   }}else{
+    const ownerToken = localStorage.getItem('OwnerToken');
+    console.log(ownerToken);
     try {
     const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/stores/${ownerStore.stores[0].store_id}/staff/add/`, 
     {
@@ -415,7 +419,7 @@ const submitForm = async () => {
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authStore.authToken}`
+          'Authorization': `Bearer ${ownerToken}`
         }
       }
     );

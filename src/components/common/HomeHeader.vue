@@ -29,6 +29,7 @@ const navigateToStoreLogin = () => {
 
 const navigateToHome = () => {
     console.log('navigateToHome')
+    localStorage.clear()
   router.push('/')
 }
 </script>

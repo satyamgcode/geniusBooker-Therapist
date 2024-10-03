@@ -381,6 +381,7 @@ onBeforeMount(() => {
   console.log("therapistDetails", therapistDetails.value);
 });
 onMounted(() => {
+  fetchTherapistSchedule();
   therapistSchedule.value = JSON.parse(localStorage.getItem('genius-booker-therapistScheduleDetails'));
   console.log("therapistSchedule", therapistSchedule.value);
   // Map therapistSchedule to calendar events

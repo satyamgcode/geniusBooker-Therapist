@@ -32,11 +32,11 @@
                   <div class="text-caption text-grey-7 q-mt-xs">{{ staff.role || 'job profile' }}</div>
                   <div class="text-body2 q-mt-xs">{{ staff.therapist_exp || staff.exp ||'experience' }}</div>
                   <q-toggle
-                    :model-value="staff.active"
+                    :model-value="staff.is_active"
                     checked-icon="check"
                     unchecked-icon="clear"
                     color="green"
-                    :label="staff.active ? 'Active' : 'Inactive'"
+                    :label="staff.is_active ? 'Active' : 'Inactive'"
                     @update:model-value="showConfirmDialog(staff, index)"
                   />
                 </q-card-section>

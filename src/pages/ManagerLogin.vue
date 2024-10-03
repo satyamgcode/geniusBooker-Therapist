@@ -15,8 +15,7 @@
                   v-model="phone"
                   label="Phone Number"
                   dense
-                  mask="(###) ###-####"
-                  :rules="[val => !!val || 'Phone number is required']"
+                  :rules="phoneRules"
                 />
                 <q-input
                   dense
@@ -60,6 +59,11 @@
   
   const phone = ref('');
   const password = ref('');
+
+  const phoneRules = [
+  val => !!val || 'Phone number is required',
+  val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
+  ];
 
   const handleManagerLogin =  async () => {
     try {

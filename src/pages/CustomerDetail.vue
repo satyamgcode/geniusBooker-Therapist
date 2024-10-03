@@ -27,7 +27,7 @@
                 outlined
                 type="tel"
                 dense
-                :rules="[val => !!val || 'Phone Number is required']"
+                :rules="phoneRules"
                 class="custom-input"
               />
               <q-select
@@ -64,6 +64,11 @@ const router = useRouter();
 const customerStore = useCustomerStore();
 
 const formData = ref(customerStore.formData);
+
+const phoneRules = [
+  val => !!val || 'Phone number is required',
+  val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
+];
 
 const sessionOptions = [
   { label: '30 minutes', value: '30' },

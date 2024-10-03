@@ -60,7 +60,7 @@
                   v-model="store.phone"
                   label="Phone Number"
                   disable
-                  mask="(###) ###-####"
+                  :rules="phoneRules"
                   outlined
                   class="q-mb-sm"
                 />
@@ -222,6 +222,11 @@ import { useRouter } from 'vue-router';
 import AppHeader from 'src/components/common/AppHeader.vue';
 
 const router = useRouter();
+
+const phoneRules = [
+  val => !!val || 'Phone number is required',
+  val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
+];
 
 const store = ref({
   name: '',
