@@ -360,13 +360,13 @@ const resetStaffDetails = () => {
 const submitForm = async () => {
   if(managerStore.manager?.manager_id){
   try {
-    const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/stores/${managerStore.managerStores[0].store_id}/staff/add/`, 
+    const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/stores/${managerStore.managerStores[0].wstore_id}/staff/add/`, 
     {
       staff: staff.value.map(staffMember => {
         const staffData = {
           phone: staffMember.phone,
           password: staffMember.password,
-          staff_role: staffMember.role,
+          role: staffMember.role,
           staff_name: staffMember.username,
         };
         
@@ -403,7 +403,7 @@ const submitForm = async () => {
         const staffData = {
           phone: staffMember.phone,
           password: staffMember.password,
-          staff_role: staffMember.role,
+          role: staffMember.role,
           staff_name: staffMember.username,
         };
         
