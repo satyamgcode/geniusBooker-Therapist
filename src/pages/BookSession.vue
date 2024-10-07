@@ -175,6 +175,64 @@ const phoneRules = [
   val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
 ];
 
+const fetchTherapistSchedule = async () => {
+  const therapist_id =  form.value.therapist?.value 
+
+  try {
+    const response = await axios.get(
+      `${process.env.VUE_APP_API_URL}/api/therapists/${therapist_id}/schedule/`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+
+    console.log(response.data);
+
+    // Combine confirmedBookings, pendingBookings, and schedules into a single array
+    const combinedSchedule = [
+      ...response.data.confirmedBookings.map((booking) => ({
+        id: booking.appointment_id, // Use appointment_id for the unique identifier
+        title: booking.title,
+        start: booking.start,
+        end: booking.end,
+        backgroundColor: '#21BA45', // You can change colors based on your logic
+        borderColor: '#21BA45',
+        editable: false,
+      })),
+      ...response.data.pendingBookings.map((booking) => ({
+        id: `pending-${booking.appointment_id}`, // Unique ID for pending bookings
+        title: `Pending: ${booking.title}`, // Prefix to distinguish
+        start: booking.start,
+        end: booking.end,
+        backgroundColor: '#FFA500', // Change color for pending bookings
+        borderColor: '#FFA500',
+        editable: false,
+      })),
+      ...response.data.schedules.map((scheduleEvent) => ({
+        id: `schedule-${scheduleEvent.title}`, // Unique ID for schedules
+        title: scheduleEvent.title,
+        start: scheduleEvent.start,
+        end: scheduleEvent.end,
+        backgroundColor: 'red', // Change color for schedules
+        borderColor: 'red',
+        editable: false,
+      })),
+    ];
+
+    therapistSchedule.value = combinedSchedule; // Store the combined schedule
+
+    console.log(therapistSchedule.value);
+
+    // Assign to schedule.value if needed for specific use
+    schedule.value = combinedSchedule;
+
+    console.log(schedule.value);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 const eventForm = ref({
   id: null,
@@ -402,26 +460,6 @@ const therapistOptions = computed(() => {
   return fetchAllStores.getStoreById(route.query.store_id)?.staff.map((item) => ({ label: item.name, value: item.StaffId, active: true })) || []
 })
 
-const fetchTherapistSchedule = async () => {
-  const therapist_id =  form.value.therapist?.value
-  console.log('therapist_id' , therapist_id)
-  console.log(therapist_id)
-  try{
-    const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/therapists/${therapist_id}/schedule/` , 
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    )
-    console.log(response.data)
-    StaffDetails.setTherapistSchedule(response.data.schedules);
-}catch (error) {
-  console.error(error); 
-}
-}
-
-
 const handleTherapistChange = async () => {
    await fetchTherapistSchedule();
 };
@@ -508,21 +546,6 @@ onBeforeMount(() => {
 onMounted(() => {
   therapistSchedule.value = JSON.parse(localStorage.getItem('genius-booker-therapistScheduleDetails'));
   console.log("therapistSchedule", therapistSchedule.value);
-  // Map therapistSchedule to calendar events
-//  setTimeout(() => {
-// const newSchedule = therapistSchedule.value?.map((scheduleEvent) => ({
-//     id: scheduleEvent.id,
-//     title: scheduleEvent.title,
-//     start: scheduleEvent.start,
-//     end: scheduleEvent.end,
-//     backgroundColor: scheduleEvent.backgroundColor || '#21BA45',
-//     borderColor: scheduleEvent.backgroundColor || '#21BA45',
-//     editable: false,
-//   }));
-
-//   schedule.value = [...newSchedule , ...schedule.value];
-//  } , 1500)
-
 })
 
 </script>

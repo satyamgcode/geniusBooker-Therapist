@@ -301,7 +301,6 @@ const fetchTherapistSchedule = async () => {
     console.log(response.data.pendingBookings)
     console.log(response.data.schedules);
     StaffDetails.setTherapistSchedule(response.data.schedules);
-    // StaffDetails.setTherapistPendingBookings(response.data.pendingBookings);
 
     const apiPendingBookings = response.data.pendingBookings.map(booking => ({
       name: booking.name,

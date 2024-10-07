@@ -47,7 +47,7 @@ import { useTherapistStore } from 'src/stores/useStaffStore';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useAuthStore } from 'src/stores/AuthStore';
 import axios from 'axios';
-import { format, formatRFC3339 } from 'date-fns';
+import { format } from 'date-fns';
 
 const StaffDetails = useTherapistStore();
 
@@ -58,7 +58,7 @@ const therapistSchedule = ref([]);
 
 const scheduleDialogOpen = ref(false);
 const eventDialogOpen = ref(false);
-const schedule = ref([]); // Array to store events
+const schedule = ref([]); 
 const eventForm = ref({
   id: null,
   title: '',
@@ -76,32 +76,72 @@ const props = defineProps({
 const fetchTherapistSchedule = async () => {
   const authToken = localStorage.getItem('authToken');
   const therapist_id = StaffDetails.therapist.therapist_id; 
+
   try {
     const response = await axios.get(
-    `${process.env.VUE_APP_API_URL}/api/therapists/${therapist_id}/schedule/`,
+      `${process.env.VUE_APP_API_URL}/api/therapists/${therapist_id}/schedule/`,
       {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`
         }
-    }
-  );
-  console.log(response.data.schedules);
-  StaffDetails.setTherapistSchedule(response.data.schedules);
+      }
+    );
+
+    console.log(response.data);
+
+    // Combine confirmedBookings, pendingBookings, and schedules into a single array
+    const combinedSchedule = [
+      ...response.data.confirmedBookings.map((booking) => ({
+        id: booking.appointment_id, // Use appointment_id for the unique identifier
+        title: booking.title,
+        start: booking.start,
+        end: booking.end,
+        backgroundColor: '#21BA45', // You can change colors based on your logic
+        borderColor: '#21BA45',
+        editable: false,
+      })),
+      ...response.data.pendingBookings.map((booking) => ({
+        id: `pending-${booking.appointment_id}`, // Unique ID for pending bookings
+        title: `Pending: ${booking.title}`, // Prefix to distinguish
+        start: booking.start,
+        end: booking.end,
+        backgroundColor: '#FFA500', // Change color for pending bookings
+        borderColor: '#FFA500',
+        editable: false,
+      })),
+      ...response.data.schedules.map((scheduleEvent) => ({
+        id: `schedule-${scheduleEvent.title}`, // Unique ID for schedules
+        title: scheduleEvent.title,
+        start: scheduleEvent.start,
+        end: scheduleEvent.end,
+        backgroundColor: 'red', // Change color for schedules
+        borderColor: 'red',
+        editable: false,
+      })),
+    ];
+
+    therapistSchedule.value = combinedSchedule; // Store the combined schedule
+
+    console.log(therapistSchedule.value);
+
+    // Assign to schedule.value if needed for specific use
+    schedule.value = combinedSchedule;
+
+    console.log(schedule.value);
   } catch (error) {
     console.error(error);
   }
 }
+
 
 const getCurrentTime = () => {
   const now = new Date();
   return now.toISOString().slice(11, 16);
 };
 
-// Define allowed weekdays (e.g., Monday to Friday) and timeslots (e.g., 9 AM to 5 PM)
-const allowedWeekdays = ref([]); // Empty array to be filled dynamically
+const allowedWeekdays = ref([]); 
 
-// Mapping weekday names to numbers
 const weekdayMap = {
   sunday: 0,
   monday: 1,
@@ -112,12 +152,10 @@ const weekdayMap = {
   saturday: 6,
 };
 
-// Initialize businessHours and busyHours as refs
 const businessHours = ref([]);
 
 const busyHours = ref([]);
 
-// Function to update businessHours and busyHours when allowedWeekdays change
 const updateBusinessHoursAndBusyHours = () => {
   businessHours.value.forEach(bh => {
     bh.daysOfWeek = allowedWeekdays.value;
@@ -126,46 +164,39 @@ const updateBusinessHoursAndBusyHours = () => {
     bh.daysOfWeek = allowedWeekdays.value;
   });
 };
-
-// Watch for changes in therapistDetails to update allowedWeekdays
 watch(() => therapistDetails.value.store_schedule?.opening_days, (newDays) => {
   if (newDays && Array.isArray(newDays)) {
     allowedWeekdays.value = newDays.map(day => weekdayMap[day.toLowerCase()]);
-    console.log('allowedWeekdays', allowedWeekdays.value); // Output: [0, 1, ...] for days like ['sunday', 'monday']
+    console.log('allowedWeekdays', allowedWeekdays.value); 
     updateBusinessHoursAndBusyHours();
   }
 });
 
-// Watch for changes in lunch start and end times
 watch(
   () => [therapistDetails.value.store_schedule?.lunch_start_time, therapistDetails.value.store_schedule?.lunch_end_time], 
   ([newLunchStart, newLunchEnd]) => {
     if (newLunchStart && newLunchEnd) {
-      // Dynamically update busy hours with lunch time
       busyHours.value = [
         { 
           title: 'BusyHours/Lunchtime',
-          daysOfWeek: allowedWeekdays.value, // Apply to allowed weekdays
-          startTime: newLunchStart, // Dynamically set lunch start time
-          endTime: newLunchEnd,     // Dynamically set lunch end time
+          daysOfWeek: allowedWeekdays.value,
+          startTime: newLunchStart, 
+          endTime: newLunchEnd,     
         },
       ];
       console.log('Updated busy hours:', busyHours.value);
     }
   }
 );
-
-// Watch for changes in business start_time and end_time
 watch(
   () => [therapistDetails.value.store_schedule?.start_time, therapistDetails.value.store_schedule?.end_time], 
   ([newStartTime, newEndTime]) => {
     if (newStartTime && newEndTime) {
-      // Dynamically update business hours with the start and end time
       businessHours.value = [
         {
-          daysOfWeek: allowedWeekdays.value, // Apply to allowed weekdays
-          startTime: newStartTime, // Dynamically set business start time
-          endTime: newEndTime,        // Keep lunch break (fixed time slot)
+          daysOfWeek: allowedWeekdays.value, 
+          startTime: newStartTime, 
+          endTime: newEndTime,        
         }
       ];
       console.log('Updated business hours:', businessHours.value);
@@ -173,8 +204,6 @@ watch(
   }
 );
 
-
-// Function to check if a time slot is within a busy period
 const isWithinBusyHours = (selectInfo, dayOfWeek) => {
   const startTime = format(selectInfo.start, 'HH:mm:ss');
   const endTime = format(selectInfo.end, 'HH:mm:ss');
@@ -183,14 +212,13 @@ const isWithinBusyHours = (selectInfo, dayOfWeek) => {
     return (
       allowedWeekdays.value.includes(dayOfWeek) &&
       (
-        (startTime >= busyTime.startTime && startTime < busyTime.endTime) || // Start time overlaps with busy time
-        (endTime > busyTime.startTime && endTime <= busyTime.endTime)       // End time overlaps with busy time
+        (startTime >= busyTime.startTime && startTime < busyTime.endTime) ||
+        (endTime > busyTime.startTime && endTime <= busyTime.endTime)       
       )
     );
   });
 };
 
-// Function to check if a time slot is within business hours
 const isWithinBusinessHours = (selectInfo, dayOfWeek) => {
   const startTime = format(selectInfo.start, 'HH:mm:ss');
   const endTime = format(selectInfo.end, 'HH:mm:ss');
@@ -204,22 +232,19 @@ const isWithinBusinessHours = (selectInfo, dayOfWeek) => {
   });
 };
 
-// Initialize busyEvents as a ref
 const busyEvents = ref([]);
 
-// Watch for changes in busyHours to update busyEvents
 watch(busyHours, (newBusyHours) => {
   busyEvents.value = newBusyHours.map(busyTime => ({
     title: busyTime.title || 'Not available',
-    daysOfWeek: busyTime.daysOfWeek, // Apply to specific days
-    startTime: busyTime.startTime,   // Busy start time
-    endTime: busyTime.endTime,       // Busy end time
-    display: 'background',           // Display it as a background event
-    className: 'fc-busy-event',      // Apply custom CSS class for busy slots
+    daysOfWeek: busyTime.daysOfWeek, 
+    startTime: busyTime.startTime,   
+    endTime: busyTime.endTime,       
+    display: 'background',           
+    className: 'fc-busy-event',      
   }));
 }, { deep: true });
 
-// Initialize calendarOptions as a ref
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
   initialView: 'timeGridDay',
@@ -236,18 +261,16 @@ const calendarOptions = ref({
   selectMirror: true,
   nowIndicator: true,
   longPressDelay: 50,
-  events: [], // Will be updated dynamically
-  businessHours: businessHours.value, // Link the businessHours array
+  events: [], 
+  businessHours: businessHours.value, 
   selectAllow: (selectInfo) => {
     const currentView = fullCalendar.value.getApi().view.type;
 
-    // If in dayGridMonth (month view), allow full-day selection
     if (currentView === 'dayGridMonth') {
-      return true;  // Allow full-day selection in month view
+      return true;
     }
 
     const dayOfWeek = selectInfo.start.getUTCDay();
-    // Check if the selected slot is within business hours and not within busy hours
     return isWithinBusinessHours(selectInfo, dayOfWeek) && !isWithinBusyHours(selectInfo, dayOfWeek);
   },
 
@@ -258,13 +281,11 @@ const calendarOptions = ref({
   }
 });
 
-// Watch for changes in schedule and busyEvents to update calendar events
 watch([schedule, busyEvents], () => {
   calendarOptions.value.events = [...schedule.value, ...busyEvents.value];
   console.log(calendarOptions.value.events);
 }, { deep: true });
 
-// Watch for changes in businessHours to update calendarOptions
 watch(businessHours, () => {
   calendarOptions.value.businessHours = businessHours.value;
 }, { deep: true });
@@ -272,6 +293,8 @@ watch(businessHours, () => {
 const fullCalendar = ref(null);
 
 const onDialogShow = async () => {
+  // fetchTherapistSchedule();
+
   await nextTick();
   setTimeout(() => {
     if (fullCalendar.value) {
@@ -280,6 +303,7 @@ const onDialogShow = async () => {
     }
   }, 300);
 };
+
 
 const showScheduleDialog = () => {
   scheduleDialogOpen.value = true;
@@ -338,9 +362,8 @@ const closeDialog = () => {
   scheduleDialogOpen.value = false;
 };
 
-// Modify saveEvent to add the new event's time to busyHours
 const saveEvent = () => {
-  const dayOfWeek = new Date(eventForm.value.start).getUTCDay();// Create new event
+  const dayOfWeek = new Date(eventForm.value.start).getUTCDay();
   const newEvent = {
     id: Date.now(),
     title: eventForm.value.title,
@@ -351,20 +374,17 @@ const saveEvent = () => {
     editable: false,
   };
 
-  // Add the new event to the schedule array
   schedule.value.push(newEvent);
 
-  // Add the event time to busyHours
   busyHours.value.push({
     title: 'Busy Hours',
-    daysOfWeek: [dayOfWeek], // Restrict to the specific day of the event
+    daysOfWeek: [dayOfWeek],
     startTime: format(new Date(eventForm.value.start), 'HH:mm'),
     endTime: format(new Date(eventForm.value.end), 'HH:mm'),
   });
 
   saveSelectedDate();
 
-  // Reset the form after saving
   eventForm.value = { id: null, title: '', start: '', end: '', color: '#21BA45' };
   eventDialogOpen.value = false;
   scheduleDialogOpen.value = false;
@@ -380,21 +400,9 @@ onBeforeMount(() => {
   };
   console.log("therapistDetails", therapistDetails.value);
 });
-onMounted(() => {
+onBeforeMount(() => {
   fetchTherapistSchedule();
-  therapistSchedule.value = JSON.parse(localStorage.getItem('genius-booker-therapistScheduleDetails'));
   console.log("therapistSchedule", therapistSchedule.value);
-  // Map therapistSchedule to calendar events
-  schedule.value = therapistSchedule.value?.map((scheduleEvent) => ({
-    id: scheduleEvent.id,
-    title: scheduleEvent.title,
-    start: scheduleEvent.start,
-    end: scheduleEvent.end,
-    backgroundColor: scheduleEvent.backgroundColor || '#21BA45',
-    borderColor: scheduleEvent.backgroundColor || '#21BA45',
-    editable: false,
-  }));
-
 })
 </script>
 
