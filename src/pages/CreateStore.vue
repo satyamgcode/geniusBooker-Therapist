@@ -13,7 +13,7 @@
             <q-card-section>
               <q-input filled v-model="store.name" label="Store Name" dense class="q-mb-sm" />
               <q-input filled v-model="store.address" label="Store Address" dense class="q-mb-sm" />
-              <q-input filled v-model="store.phone" label="Phone Number" dense class="q-mb-sm" :rules="phoneRules" />
+              <q-input filled v-model="store.phone" label="Phone Number" dense class="q-mb-sm" :rules="phoneRules" readonly/>
               <q-input filled v-model="store.email" label="Email" type="email" dense class="q-mb-sm" required :rules="[val => !!val || 'Valid email is required']" hide-bottom-space/>
 
               <!-- Store Schedule -->
@@ -165,7 +165,7 @@ const phoneRules = [
 const store = ref({
   name: '',
   address: '',
-  phone: '',
+  phone: localStorage.getItem('phoneNumber'),
   email: null,
   openingDays: [],
   startTime: '',

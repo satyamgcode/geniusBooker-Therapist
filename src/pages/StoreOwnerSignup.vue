@@ -225,6 +225,7 @@ const sendOtp = async () => {
 };
 
 const handleLogin = async () => {
+  // localStorage.setItem('phoneNumber', phone.value);
   try {
     const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/login/owner/`, {
       phone: phone.value,
@@ -234,6 +235,7 @@ const handleLogin = async () => {
         'Content-Type': 'application/json',
       },
     });
+    // localStorage.setItem('phoneNumber', phone.value);
     console.log(response.data);
     authStore.setToken(response.data.access);
     const { owner, stores } = response.data;
@@ -248,6 +250,9 @@ const handleLogin = async () => {
   } catch (error) {
     console.error('Error during login:', error);
     router.push('/createStore');
+    // localStorage.setItem('phoneNumber', phone.value);
+  }finally {
+    localStorage.setItem('phoneNumber', phone.value);
   }
 };
 

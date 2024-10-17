@@ -362,6 +362,7 @@ const handleSubmit = async () => {
     console.error('Error saving store and staff data:', error);
   } finally {
     console.log('Submission complete');
+    localStorage.removeItem('phoneNumber');
   }
 };
 

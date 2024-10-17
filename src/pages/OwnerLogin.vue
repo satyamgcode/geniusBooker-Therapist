@@ -25,6 +25,7 @@
                 label="Password"
                 :rules="[val => !!val || 'Password is required']"
               />
+              <p @click="goToForgotPassword" class="q-mt-md cursor-pointer text-positive">Forgot Password</p>
               <q-btn
                 style="border-radius: 8px;"
                 color="positive"
@@ -63,6 +64,10 @@ const phoneRules = [
   val => !!val || 'Phone number is required',
   val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
 ];
+
+const goToForgotPassword = () => {
+  router.push('/forgotPassword');
+};
 
 const handleOwnerLogin = async () => {
   try {
