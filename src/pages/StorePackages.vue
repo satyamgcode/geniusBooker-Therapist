@@ -62,6 +62,9 @@
 <script setup>
 import { ref } from 'vue';
 import AppHeader from 'src/components/common/AppHeader.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const packages = ref([
   {
@@ -103,8 +106,10 @@ const packages = ref([
 ]);
 
 const selectPackage = (pkg) => {
-  // Handle package selection
   console.log(`Selected package: ${pkg.name}`);
+  router.push('/selectedPackage')
+  console.log("selected package", pkg);
+  localStorage.setItem('paymentAmount' , pkg.price)
 };
 </script>
 

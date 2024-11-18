@@ -127,6 +127,7 @@
           </div>
         </div>
       </div>
+      <Loader :isVisible="isLoading" color="primary" />
       <q-dialog v-model="SlotSuggestionDialog" persistent>
         <q-card>
           <q-card-section>
@@ -148,13 +149,24 @@
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref , watch } from 'vue';
 import AppHeader from 'src/components/common/AppHeader.vue';
 import TherapistCalendar from 'src/components/common/TherapistCalendar.vue';
 import { useTherapistStore } from 'src/stores/useStaffStore';
 import { useAuthStore } from 'src/stores/AuthStore';
 import axios from 'axios';
 import { format } from 'date-fns';
+
+import { useRouter } from 'vue-router';
+
+import Loader from 'src/components/common/Loader.vue';
+
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+
+const isLoading = ref(false);
+
+const router = useRouter();
 
 const StaffDetails = useTherapistStore();
 const authStore = useAuthStore();
@@ -276,8 +288,8 @@ function rescheduleBooking(booking) {
 
 function cancelBooking(booking) {
   UpdateBookingsStatus(booking.appointment_id, 'Cancelled');
-  pendingBookings.value = pendingBookings.value.filter((b) => b !== booking);
-  confirmedBookings.value = confirmedBookings.value.filter((b) => b !== booking);
+  // pendingBookings.value = pendingBookings.value.filter((b) => b !== booking);
+  // confirmedBookings.value = confirmedBookings.value.filter((b) => b !== booking);
 }
 
 function viewBooking(booking) {
@@ -322,17 +334,24 @@ const fetchTherapistSchedule = async () => {
       appointment_id: booking.appointment_id
     }));
     confirmedBookings.value = apiConfirmedBookings;
+    if(response.data.code == "token_not_valid"){
+      toast.error('Session Expired');
+      router.push('therapist-login')
+    }
   } catch (error) {
     console.error(error);
+    toast.error('Error fetching therapist schedule');
+    router.push('therapist-login')
   }
 }
 
 const UpdateBookingsStatus = async (appointment_id, status, payload = {}) => {
+  isLoading.value = true
   console.trace(appointment_id. payload)
   const authToken = localStorage.getItem('authToken');
   try {
     const response = await axios.patch(
-      `${process.env.VUE_APP_API_URL}/api/appointments/${appointment_id}/update_status/`,
+      `${process.env.VUE_APP_API_URL}/api/appointments/${appointment_id}/updated_status/`,
       {
         status: status, // rescheduled , cancelled
         ...payload
@@ -348,8 +367,13 @@ const UpdateBookingsStatus = async (appointment_id, status, payload = {}) => {
     }
     console.log(response.data);
     confirmedBookings.value = [...confirmedBookings.value, booking];
+    toast.success('Booking status updated successfully');
+    isLoading.value = false
   } catch (error) {
     console.error(error);
+    toast.error('Error updating booking status');
+  }finally{
+    isLoading.value = false
   }
 }
 onBeforeMount(() => {
@@ -363,6 +387,7 @@ onBeforeMount(() => {
 onMounted(async () => {
   await fetchTherapistSchedule();
 })
+
 </script>
 
 <style scoped>

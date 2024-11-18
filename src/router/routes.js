@@ -48,6 +48,10 @@ const routes = [
     component: () => import('pages/StorePackages.vue'),
   },
   {
+    path : '/selectedPackage',
+    component: () => import('pages/SelectedPackageDetails.vue'),
+  },
+  {
     path : '/book-session',
     component: () => import('pages/BookSession.vue'),
   },

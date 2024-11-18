@@ -42,6 +42,7 @@ const navigateToHome = () => {
   StaffDetails.clearTherapist();
   ManagerDetails.clearManager();
   authStore.clearToken();
+  localStorage.clear();
   router.push('/');
 };
 </script>

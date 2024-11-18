@@ -42,7 +42,7 @@
             </q-card>
   
             <!-- Loader while fetching details -->
-            <q-spinner v-if="loading" size="50px" color="primary" class="q-ma-md" />
+            <Loader :isVisible="loading" color="primary" />
           </div>
         </q-page>
       </q-page-container>
@@ -55,11 +55,15 @@
   import { useRouter, useRoute } from 'vue-router';
   import axios from 'axios';
   import { ref, onBeforeMount } from 'vue';
+  import Loader from 'src/components/common/Loader.vue';
+
+  import { toast } from 'vue3-toastify';
+  import 'vue3-toastify/dist/index.css';
   
   const router = useRouter();
   const route = useRoute();
   const rescheduleDetails = ref({});
-  const loading = ref(true); // Loading state to control when data is fetched
+  const loading = ref(false); // Loading state to control when data is fetched
   
   function calculateDuration(start, end) {
     const startDate = new Date(start);
@@ -93,6 +97,7 @@
   };
   
   const updateBookingStatus = async (status) => {
+    loading.value = true;
     try {
       const response = await axios.post(
         `${process.env.VUE_APP_API_URL}/api/appointments/${appointment_id}/confirm/`,
@@ -100,9 +105,15 @@
         { headers: { 'Content-Type': 'application/json' } }
       );
       console.log(response.data);
+      toast.success('Appointment updated successfully , you\'ll receive a message shortly');
+      loading.value = false;
       router.push('/');
     } catch (error) {
       console.error(error);
+      toast.error('Error updating appointment status');
+      loading.value = false;
+    }finally{
+      loading.value = false;
     }
   };
   

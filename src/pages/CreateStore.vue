@@ -13,8 +13,8 @@
             <q-card-section>
               <q-input filled v-model="store.name" label="Store Name" dense class="q-mb-sm" />
               <q-input filled v-model="store.address" label="Store Address" dense class="q-mb-sm" />
-              <q-input filled v-model="store.phone" label="Phone Number" dense class="q-mb-sm" :rules="phoneRules" readonly/>
-              <q-input filled v-model="store.email" label="Email" type="email" dense class="q-mb-sm" required :rules="[val => !!val || 'Valid email is required']" hide-bottom-space/>
+              <q-input filled v-model="store.phone" label="Phone Number" dense class="q-mb-sm" :rules="phoneRules" />
+              <q-input filled v-model="store.email" label="Email" type="email" dense class="q-mb-sm"  hide-bottom-space/>
 
               <!-- Store Schedule -->
               <q-card class="q-my-md q-pa-md bg-grey-2">
@@ -207,11 +207,12 @@ const handleLunchEndTimePicker = () => {
 }
 
 const goToStaffDetails = () => {
+  localStorage.setItem('__store_details__', JSON.stringify(store.value))
   router.push({
     path: 'StaffDetails',
-    query: {
-      storeData: JSON.stringify(store.value)
-    }
+    // query: {
+    //   storeData: JSON.stringify(store.value)
+    // }
   })
 }
 </script>

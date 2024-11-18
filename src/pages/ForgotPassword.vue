@@ -9,18 +9,6 @@
                 Forgot Password
               </div>
               <q-form @submit.prevent="submitForm">
-                <!-- <q-input
-                  outlined
-                  v-model="email"
-                  label="Enter your email address"
-                  dense
-                  type="email"
-                  class="q-my-md"
-                  :rules="[validateEmailOrPhone]"
-                  hint="We will send you a password reset link"
-                  hide-bottom-space
-                /> -->
-                <!-- <div class="text-center text-bold q-my-md">OR</div> -->
                 <q-input
                   outlined
                   v-model="phoneNumber"

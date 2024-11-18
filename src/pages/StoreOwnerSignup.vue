@@ -29,6 +29,7 @@
                     dense
                     type="password"
                     class="q-my-sm"
+                    :rules="phoneRules"
                     hide-bottom-space
                   />
                   
@@ -72,7 +73,6 @@
                     dense
                     type="email"
                     class="q-my-sm"
-                    :rules="[val => !!val || 'Valid email is required']"
                     hide-bottom-space
                   />
                   <div class="phone-section">
@@ -86,13 +86,14 @@
                     hide-bottom-space
                   />
                   <q-btn
-                    label="Send"
+                    :label="canResendOtp ? 'Send' : `Resend in ${otpResendTimer}s`"
                     color="primary"
                     class="q-my-sm"
                     @click="sendOtp"
-                    :disable="otpSent"
+                    :disable="!canResendOtp"
                     no-caps
                   />
+
                   </div>
                   <q-input
                     v-if="otpSent"
@@ -138,7 +139,12 @@
             </q-tab-panel>
           </q-tab-panels>
         </q-card>
+        <div v-if="isLoading" class="loader-overlay">
+  <q-spinner color="primary" size="50px" />
+</div>
+
       </q-page>
+      
     </q-page-container>
   </q-layout>
 </template>
@@ -146,15 +152,23 @@
 <script setup>
 import { useAuthStore } from 'src/stores/AuthStore';
 import { useOwnerStore } from 'src/stores/ownerStoresStore';
-import { ref } from 'vue';
+import { ref , computed } from 'vue';
 import HomeHeader from '../components/common/HomeHeader.vue';
 import VueTurnstile from 'vue-turnstile';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
+
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+
+const isLoading = ref(false);
 const router = useRouter();
 const authStore = useAuthStore();
 const ownerStore = useOwnerStore();
+
+const otpResendTimer = ref(0); 
+const canResendOtp = computed(() => otpResendTimer.value === 0);
 
 const selectedTab = ref('signup');
 const first_name = ref('');
@@ -167,6 +181,18 @@ const otp = ref('');  // For OTP input
 const otpSent = ref(false);  // Flag to show OTP input after sending OTP
 
 const token = ref('');
+
+
+const startOtpResendTimer = () => {
+  otpResendTimer.value = 60; // Set timer to 60 seconds
+  const interval = setInterval(() => {
+    otpResendTimer.value -= 1;
+    if (otpResendTimer.value <= 0) {
+      clearInterval(interval); // Stop the timer
+    }
+  }, 1000); // Decrease timer every second
+};
+
 
 const passwordRules = [
   val => !!val || 'Password is required',
@@ -190,21 +216,19 @@ const handleSignup = async () => {
       phone: phone.value,
       password: password.value,
       password2: confirm_password.value,
-      otp: otp.value,  // Pass OTP
+      otp: otp.value, 
     }, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
     console.log(response.data);
+    toast.success('registration successful');
     selectedTab.value = 'signin';
   } catch (error) {
-    console.error('Error during signup:', error);
-  } finally {
-    selectedTab.value = 'signin';
-  }
+    toast.error('registration failed , Please try again');
+  } 
 };
-
 const sendOtp = async () => {
   try {
     const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/register/`, {
@@ -217,15 +241,17 @@ const sendOtp = async () => {
     });
     console.log(response.data);
     otpSent.value = true;
-    console.log('OTP sent successfully');
+    toast.success('OTP sent successfully');
+    startOtpResendTimer(); // Start the timer
   } catch (error) {
-    console.error('Error sending OTP:', error);
+    toast.error('OTP sending failed, please try again');
     otpSent.value = true;
   }
 };
 
+
 const handleLogin = async () => {
-  // localStorage.setItem('phoneNumber', phone.value);
+  // isLoading.value = true;
   try {
     const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/login/owner/`, {
       phone: phone.value,
@@ -244,25 +270,32 @@ const handleLogin = async () => {
     if (stores[0]?.store_id) {
       console.log(`/store/${stores[0].store_id}`);
       router.push(`/store/${stores[0].store_id}`);
+      toast.success('Login successful');
     } else {
       router.push('/createStore');
+      toast.info('Please create a store');
     }
   } catch (error) {
     console.error('Error during login:', error);
-    router.push('/createStore');
-    // localStorage.setItem('phoneNumber', phone.value);
+    toast.error('Invalid credentials');
   }finally {
     localStorage.setItem('phoneNumber', phone.value);
   }
 };
 
 const submitForm = async () => {
-  if (selectedTab.value === 'signup') {
-    await handleSignup();
-  } else if (selectedTab.value === 'signin') {
-    await handleLogin();
+  isLoading.value = true;
+  try {
+    if (selectedTab.value === 'signup') {
+      await handleSignup();
+    } else if (selectedTab.value === 'signin') {
+      await handleLogin();
+    }
+  } finally {
+    isLoading.value = false; 
   }
 };
+
 
 const goToForgotPassword = () => {
   router.push('/forgotPassword');
@@ -280,4 +313,17 @@ const goToForgotPassword = () => {
   justify-content: space-between;
   gap:8px; 
 }
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; 
+  backdrop-filter: blur(5px);
+}
+
 </style>

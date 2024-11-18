@@ -58,7 +58,7 @@
   .footer {
     background-color: #1e1e1e;
     color: white;
-    padding: 30px 15px;
+    padding: 40px 20px;
     border-top: 2px solid #ccc;
     position: unset !important;
   }

@@ -26,7 +26,7 @@
               />
               <q-input filled v-model="staffMember.email" label="Email" type="email" dense class="q-mb-sm" required rules="[(val) => (val && val.length > 0) || 'Email is required']" hide-bottom-space />
               <q-select filled v-model="staffMember.role" :options="roles" label="Role" dense class="q-mb-sm" :rules="[(val) => (val && val.length > 0) || 'Role is required']" hide-bottom-space />
-              <q-input filled v-model="staffMember.password" label="Password" type="password" dense />
+              <q-input filled v-model="staffMember.password" label="Password" type="password" dense :rules="passwordRules" hide-bottom-space />
               <q-card class="q-my-md q-pa-md bg-grey-2">
                 <q-card-section>
                   <div class="text-subtitle1">Staff Schedule</div>
@@ -179,6 +179,15 @@ const fullCalendar = ref(null);
 const phoneRules = [
   val => !!val || 'Phone number is required',
   val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
+];
+
+const passwordRules = [
+  val => !!val || 'Password is required',
+  val => val.length >= 8 || 'Password must be at least 8 characters',
+  val => /[A-Z]/.test(val) || 'Password must contain an uppercase letter',
+  val => /[a-z]/.test(val) || 'Password must contain a lowercase letter',
+  val => /[0-9]/.test(val) || 'Password must contain a number',
+  val => /[!@#$%^&*]/.test(val) || 'Password must contain a special character',
 ];
 
 const daysOfWeek = [

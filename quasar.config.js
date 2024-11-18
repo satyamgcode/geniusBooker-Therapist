@@ -16,8 +16,8 @@ module.exports = configure(function (ctx ) {
   require('dotenv').config()
   return {
     framework: {
-      config: {},
-      plugins: ['Notify']
+      config: {  },
+      plugins: ['']
     },
 
     

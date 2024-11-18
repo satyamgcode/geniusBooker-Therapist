@@ -69,9 +69,12 @@ const router = useRouter()
 
 const confirm = ref(false)
 
-const storeData = JSON.parse(route.query.storeData || '{}')
+const staffDataFromLocalStorage = localStorage.getItem('__staff_details__')
+const storeDataFromLocalStorage = localStorage.getItem('__store_details__')
+
+const storeData = JSON.parse(storeDataFromLocalStorage || '{}')
 console.log('storeData:', storeData)
-const staffData = JSON.parse(route.query.staffData || '[]')
+const staffData = JSON.parse(staffDataFromLocalStorage || '[]')
 
 // Computed property to format time slots for each staff member
 const formattedSchedules = computed(() => {
@@ -96,6 +99,8 @@ function resetForm() {
 
 const continueStoreCreation = () => {
   router.push({ path: 'storePackages'})
+  localStorage.removeItem('__staff_details__')
+  localStorage.removeItem('__store_details__')
 }
 </script>
 

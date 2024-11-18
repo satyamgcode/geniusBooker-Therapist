@@ -31,10 +31,11 @@
                 dense
                 class="q-mb-sm"
                 :rules="phoneRules"
+                hide-bottom-space
               />
               <q-input filled v-model="staffMember.email" label="Email" type="email" dense class="q-mb-sm" />
               <q-select filled v-model="staffMember.role" :options="roles" label="Role" dense class="q-mb-sm" />
-              <q-input filled v-model="staffMember.password" label="Password" type="password" dense />
+              <q-input filled v-model="staffMember.password" label="Password" type="password" dense :rules="passwordRules" hide-bottom-space />
               <q-card class="q-my-md q-pa-md bg-grey-2">
                 <q-card-section>
                   <div class="text-subtitle1">Staff Schedule</div>
@@ -160,6 +161,7 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
+        <Loader :isVisible="isLoading" color="positive" />
       </q-page>
     </q-page-container>
   </q-layout>
@@ -175,19 +177,37 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import AppHeader from 'src/components/common/AppHeader.vue';
 import { useAuthStore } from 'src/stores/AuthStore';
+import Loader from 'src/components/common/Loader.vue';
 import { format } from 'date-fns';
+
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+import { is } from 'quasar';
+
+const isLoading = ref(false);
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 const fullCalendar = ref(null);
 
-const store = ref(JSON.parse(route.query.storeData));
+// const store = ref(JSON.parse(route.query.storeData));
+const storeDataFromLocalStorage = localStorage.getItem('__store_details__') || '{}';
+const store = ref(JSON.parse(storeDataFromLocalStorage));
 
 const phoneRules = [
   val => !!val || 'Phone number is required',
   val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
 ]
+
+const passwordRules = [
+  val => !!val || 'Password is required',
+  val => val.length >= 8 || 'Password must be at least 8 characters',
+  val => /[A-Z]/.test(val) || 'Password must contain an uppercase letter',
+  val => /[a-z]/.test(val) || 'Password must contain a lowercase letter',
+  val => /[0-9]/.test(val) || 'Password must contain a number',
+  val => /[!@#$%^&*]/.test(val) || 'Password must contain a special character',
+];
 
 const daysOfWeek = [
   { label: 'Monday', value: 'Monday' },
@@ -312,6 +332,7 @@ const onDialogShow = async () => {
 };
 
 const handleSubmit = async () => {
+  isLoading.value = true;
   console.log('Form Submitted:', staff.value);
   try {
     console.log('inside console');
@@ -358,23 +379,28 @@ const handleSubmit = async () => {
       },
     });
     console.log('Store and staff data saved successfully', response.data);
+    toast.success('Store created successfully , Login to store to continue');
+    isLoading.value = false;
+    router.push({
+    path: '/storeId',
+  });
   } catch (error) {
     console.error('Error saving store and staff data:', error);
+    toast.error("Invalid user details");
   } finally {
     console.log('Submission complete');
     localStorage.removeItem('phoneNumber');
+    isLoading.value = false;
   }
 };
 
 const submitForm = async () => {
+  localStorage.setItem('__staff_details__', JSON.stringify(staff.value));
+  
   await handleSubmit();
-  router.push({
-    path: '/storeId',
-    query: {
-      storeData: JSON.stringify(store.value),
-      staffData: JSON.stringify(staff.value),
-    },
-  });
+  // router.push({
+  //   path: '/storeId',
+  // });
   console.log('Form Submitted:', staff.value);
 };
 

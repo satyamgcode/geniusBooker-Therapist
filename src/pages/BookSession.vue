@@ -103,6 +103,8 @@
           </q-card>
         </div>
       </q-page>
+      <Loader :isVisible="isSubmitting" color="primary" />
+      
     </q-page-container>
 
     <q-dialog v-model="showTimeDialog" persistent @show="onDialogShow">
@@ -156,7 +158,11 @@ import { useTherapistStore } from 'src/stores/useStaffStore';
 import { format } from 'date-fns';
 import { useRouter , useRoute } from 'vue-router';
 import axios from 'axios';
-import { end, start } from '@popperjs/core';
+
+import Loader from 'src/components/common/Loader.vue';
+
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 const router = useRouter();
 const route = useRoute();
@@ -471,6 +477,7 @@ const createDateTimeFormatter = (date, time) => {
 };
 
 const handleBookAppointment = async () => {
+  isSubmitting.value = true;
 
   // const bookingDate = form.value.date
   const bookingStartTime = createDateTimeFormatter(form.value.date , form.value.startTime)
@@ -499,10 +506,14 @@ const handleBookAppointment = async () => {
     console.log(response.data);
     console.log('Form submitted:', form.value);
     console.log(appointmentDetails)
-    alert('Form submitted!');
-    router.push('/');
+    toast.success('Form submitted successfully');
+    setInterval(() => {
+      router.push('/');
+    }, 2000)
   } catch (error) {
-    console.error(error);
+    toast.error('some error occurred, please try again');
+  }finally{
+    isSubmitting.value = false;
   }
 }
   
@@ -510,7 +521,9 @@ const handleBookAppointment = async () => {
 
 const handleSubmit = () => {
   if (!form.value.notRobot) {
-    alert('Please check the "I am not a robot" checkbox');
+    toast.info('Please check the "I am not a robot" checkbox' , {
+      timeout: 2000
+    });
     return;
   } else {
     handleBookAppointment();
@@ -519,7 +532,6 @@ const handleSubmit = () => {
   isSubmitting.value = true;
 
   setTimeout(() => {
-    isSubmitting.value = false;
 
     form.value = {
       name: '',

@@ -23,7 +23,8 @@
                   v-model="password"
                   type="password"
                   label="Password"
-                  :rules="[val => !!val || 'Password is required']"
+                  :rules="passwordRules"
+                  hide-bottom-space
                 />
                 <q-btn
                   style="border-radius: 8px;"
@@ -64,6 +65,14 @@
   val => !!val || 'Phone number is required',
   val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
   ];
+  const passwordRules = [
+  val => !!val || 'Password is required',
+  val => val.length >= 8 || 'Password must be at least 8 characters',
+  val => /[A-Z]/.test(val) || 'Password must contain an uppercase letter',
+  val => /[a-z]/.test(val) || 'Password must contain a lowercase letter',
+  val => /[0-9]/.test(val) || 'Password must contain a number',
+  val => /[!@#$%^&*]/.test(val) || 'Password must contain a special character',
+];
 
   const handleManagerLogin =  async () => {
     try {

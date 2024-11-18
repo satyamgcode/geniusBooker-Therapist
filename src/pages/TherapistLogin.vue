@@ -23,7 +23,8 @@
                   v-model="password"
                   type="password"
                   label="Password"
-                  :rules="[val => !!val || 'Password is required']"
+                  :rules="passwordRules"
+                  hide-bottom-space
                 />
                 <q-btn
                   style="border-radius: 8px;"
@@ -38,6 +39,7 @@
               </q-form>
             </q-card-section>
           </q-card>
+          <Loader :isVisible="isLoading" color="positive" />
         </q-page>
       </q-page-container>
     </q-layout>
@@ -50,11 +52,16 @@
   import { useAuthStore } from 'src/stores/AuthStore';
   import axios from 'axios';
   import { useTherapistStore } from 'src/stores/useStaffStore';
+  import Loader from 'src/components/common/Loader.vue';
+
+  import { toast } from 'vue3-toastify';
+  import 'vue3-toastify/dist/index.css';
 
   const authStore = useAuthStore();
 
   const staffStore  = useTherapistStore();
 
+  const isLoading = ref(false);
 
   const router = useRouter();
 
@@ -62,6 +69,15 @@
   val => !!val || 'Phone number is required',
   val => /^\+\d{1,3}\d{10}$/.test(val) || 'Phone number must include country code and be valid',
   ];
+
+  const passwordRules = [
+  val => !!val || 'Password is required',
+  val => val.length >= 8 || 'Password must be at least 8 characters',
+  val => /[A-Z]/.test(val) || 'Password must contain an uppercase letter',
+  val => /[a-z]/.test(val) || 'Password must contain a lowercase letter',
+  val => /[0-9]/.test(val) || 'Password must contain a number',
+  val => /[!@#$%^&*]/.test(val) || 'Password must contain a special character',
+];
 
   const phone = ref('');
   const password = ref('');
@@ -85,18 +101,24 @@
     console.log("therapist",therapist , stores)
     staffStore.setTherapistStores(stores);
     if(stores.length > 0){
+      toast.success('Login successful');
       router.push('/therapist-dashboard');
+    }else {
+      toast.info('No therapist Account found');
     }
+   
     // router.push('/therapist-dashboard');
   } catch (error) {
     console.error('Error during login:', error);
-    router.push('/therapist-dashboard');
+    toast.error('Invalid credentials');
   }
 }
   
-  const submitForm = () => {
+  const submitForm = async () => {
+    isLoading.value = true;
     console.log('submitted', phone.value, password.value);
-    handleLogin();
+    await handleLogin();
+    isLoading.value = false;
 
   };
   </script>
