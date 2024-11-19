@@ -29,7 +29,7 @@
                     dense
                     type="password"
                     class="q-my-sm"
-                    :rules="phoneRules"
+                    :rules="passwordRules"
                     hide-bottom-space
                   />
                   
@@ -230,6 +230,7 @@ const handleSignup = async () => {
   } 
 };
 const sendOtp = async () => {
+  isLoading.value = true;
   try {
     const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/register/`, {
       phone: phone.value,
@@ -241,11 +242,14 @@ const sendOtp = async () => {
     });
     console.log(response.data);
     otpSent.value = true;
+    isLoading.value = false;
     toast.success('OTP sent successfully');
     startOtpResendTimer(); // Start the timer
   } catch (error) {
     toast.error('OTP sending failed, please try again');
     otpSent.value = true;
+  }finally{
+    isLoading.value = false;
   }
 };
 
