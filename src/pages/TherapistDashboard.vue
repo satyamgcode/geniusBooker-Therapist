@@ -351,7 +351,7 @@ const UpdateBookingsStatus = async (appointment_id, status, payload = {}) => {
   const authToken = localStorage.getItem('authToken');
   try {
     const response = await axios.patch(
-      `${process.env.VUE_APP_API_URL}/api/appointments/${appointment_id}/updated_status/`,
+      `${process.env.VUE_APP_API_URL}/api/appointments/${appointment_id}/update_status/`,
       {
         status: status, // rescheduled , cancelled
         ...payload
